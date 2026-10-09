@@ -2,41 +2,152 @@
 
 O **EcoConecta** é uma aplicação que busca conectar pessoas que disponibilizam resíduos recicláveis ou compostáveis a coletores interessados, facilitando o reaproveitamento de materiais.
 
+O projeto está sendo desenvolvido em equipe como atividade acadêmica, seguindo as funcionalidades propostas no Figma.
+
 ## Tecnologias utilizadas
 
 **Backend**
 - Java 21
 - Spring Boot 4.1.1
-- Spring Data JPA
+- Spring Data JPA / Hibernate
 - Maven
 - PostgreSQL 17
-- BCrypt para hash de senhas
+- Bean Validation
+- BCrypt para criptografia de senhas
 
-**Frontend**
-- React (em desenvolvimento)
+**Frontend (futuramente)**
+- React
 
-## Pré-requisitos
+**Ferramentas**
+- IntelliJ IDEA
+- Git e GitHub
+- Postman
+- Jira
+- pgAdmin
 
-Para executar o backend localmente, é necessário instalar:
+## Arquitetura do projeto
 
-- JDK 21
-- PostgreSQL 17
-- IntelliJ IDEA ou outra IDE compatível com Java
-- Git
+O EcoConecta utiliza uma arquitetura de **monólito modular**, organizada por funcionalidades e separada em camadas.
 
-## Configuração do banco de dados
+Cada módulo possui quatro componentes principais:
 
-Cada integrante utilizará seu próprio banco PostgreSQL local.
+- **Controller:** recebe e responde às requisições HTTP.
+- **Service:** implementa as regras de negócio.
+- **Repository:** realiza a comunicação com o banco de dados.
+- **Model:** representa as entidades da aplicação.
 
-1. Abra o pgAdmin 4.
-2. Crie um banco de dados chamado `ecoconecta`.
-3. Configure o PostgreSQL para utilizar a porta `5432`.
-4. Guarde a senha do usuário `postgres`.
+### Estrutura de diretórios
+
+```text
+ecoconecta/
+├── backend/
+│   ├── src/
+│   │   └── main/
+│   │       ├── java/
+│   │       │   └── backend/
+│   │       │       ├── usuarios/
+│   │       │       │   ├── controller/
+│   │       │       │   │   └── UsuarioController.java
+│   │       │       │   ├── service/
+│   │       │       │   │   └── UsuarioService.java
+│   │       │       │   ├── repository/
+│   │       │       │   │   └── UsuarioRepository.java
+│   │       │       │   └── model/
+│   │       │       │       └── Usuario.java
+│   │       │       │
+│   │       │       ├── residuos/
+│   │       │       │   ├── controller/
+│   │       │       │   │   └── ResiduoController.java
+│   │       │       │   ├── service/
+│   │       │       │   │   └── ResiduoService.java
+│   │       │       │   ├── repository/
+│   │       │       │   │   └── ResiduoRepository.java
+│   │       │       │   └── model/
+│   │       │       │       └── Residuo.java
+│   │       │       │
+│   │       │       ├── reservas/
+│   │       │       │   ├── controller/
+│   │       │       │   │   └── ReservaController.java
+│   │       │       │   ├── service/
+│   │       │       │   │   └── ReservaService.java
+│   │       │       │   ├── repository/
+│   │       │       │   │   └── ReservaRepository.java
+│   │       │       │   └── model/
+│   │       │       │       └── Reserva.java
+│   │       │       │
+│   │       │       ├── planos/
+│   │       │       │   ├── controller/
+│   │       │       │   │   └── PlanoController.java
+│   │       │       │   ├── service/
+│   │       │       │   │   └── PlanoService.java
+│   │       │       │   ├── repository/
+│   │       │       │   │   └── PlanoRepository.java
+│   │       │       │   └── model/
+│   │       │       │       └── Plano.java
+│   │       │       │
+│   │       │       ├── administracao/
+│   │       │       │   ├── controller/
+│   │       │       │   │   └── AdministracaoController.java
+│   │       │       │   ├── service/
+│   │       │       │   │   └── AdministracaoService.java
+│   │       │       │   ├── repository/
+│   │       │       │   │   └── AdministracaoRepository.java
+│   │       │       │   └── model/
+│   │       │       │       └── Administracao.java
+│   │       │       │
+│   │       │       ├── exception/
+│   │       │       │   └── GlobalExceptionHandler.java
+│   │       │       └── BackendApplication.java
+│   │       │
+│   │       └── resources/
+│   │           └── application.yaml
+│   ├── mvnw
+│   ├── mvnw.cmd
+│   └── pom.xml
+│
+├── README.md
+└── CONTRIBUTING.md
+```
+
+**Importante:** as classes dos módulos de resíduos, reservas, planos e administração **já foram criadas**, mas estão inicialmente sem a implementação dos CRUDs.
+
+Cada integrante deverá desenvolver as funcionalidades dentro das classes existentes, respeitando a organização dos pacotes.
+
+## Configuração do ambiente
+
+### 1. Clonar o repositório
+
+```bash
+git clone https://github.com/saulomvieira/ecoconecta.git
+```
+
+Depois, abra a pasta `backend` no IntelliJ IDEA como projeto Maven.
+
+### 2. Configurar o PostgreSQL
+
+Cada integrante utilizará seu **próprio banco de dados local**, evitando conflitos durante o desenvolvimento.
+
+Requisitos:
+- PostgreSQL instalado e em execução.
+- Banco de dados chamado `ecoconecta`.
+- Usuário PostgreSQL configurado localmente.
+
+Para criar o banco, utilize o pgAdmin ou execute:
+
+```sql
+CREATE DATABASE ecoconecta;
+```
+
+Não é necessário criar manualmente as tabelas já mapeadas como entidades JPA. Durante o desenvolvimento, o Hibernate utiliza `ddl-auto: update` para criar ou atualizar as tabelas.
+
+### 3. Configurar a conexão
 
 O arquivo `backend/src/main/resources/application.yaml` utiliza a seguinte configuração:
 
 ```yaml
 spring:
+  application:
+    name: backend
   datasource:
     url: jdbc:postgresql://localhost:5432/ecoconecta
     username: postgres
@@ -44,71 +155,131 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+    show-sql: true
 ```
 
-**Importante:** a senha do PostgreSQL não deve ser adicionada diretamente ao código nem enviada ao GitHub.
+Cada integrante deve configurar a variável de ambiente `DB_PASSWORD` com a senha do seu próprio PostgreSQL.
 
-## Executando o backend
+No IntelliJ IDEA:
 
-1. Clone o repositório:
+1. Acesse **Run → Edit Configurations**.
+2. Selecione a configuração de execução do backend.
+3. Em **Environment variables**, adicione `DB_PASSWORD` com sua senha local.
+4. Salve as alterações.
 
-```bash
-git clone https://github.com/saulomvieira/ecoconecta.git
+**Nunca envie senhas ou credenciais para o GitHub.**
+
+### 4. Executar o backend
+
+Execute a classe:
+
+`BackendApplication.java`
+
+Ou, com a variável `DB_PASSWORD` configurada no terminal, execute na pasta `backend`:
+
+**Windows:**
+
+```powershell
+.\mvnw.cmd spring-boot:run
 ```
 
-2. Abra a pasta `backend` no IntelliJ IDEA.
-
-3. Aguarde o Maven carregar as dependências.
-
-4. Acesse **Run → Edit Configurations** e configure:
-
-- Main class: `backend.BackendApplication`
-- Java: 21
-- Working directory: pasta `backend`
-- Environment variables: `DB_PASSWORD=senha_local_do_postgresql`
-
-5. Execute a aplicação pela configuração criada.
-
-Quando o servidor iniciar corretamente, a API estará disponível em:
+A API estará disponível em:
 
 `http://localhost:8080`
 
-O Hibernate criará ou atualizará as tabelas necessárias no banco local.
+## Situação do desenvolvimento
 
-## Endpoints implementados
+| Módulo | Situação |
+|---|---|
+| Usuários | CRUD implementado e testado |
+| Resíduos | Classes criadas — CRUD pendente |
+| Reservas | Classes criadas — CRUD pendente |
+| Planos de assinatura | Classes criadas — CRUD pendente |
+| Administração e termos | Classes criadas — funcionalidades pendentes |
 
-| Método | Endpoint | Descrição |
+### CRUD de usuários
+
+O módulo de usuários já possui:
+
+- Cadastro de usuários.
+- Listagem de usuários.
+- Consulta por ID.
+- Atualização de usuários.
+- Exclusão de usuários.
+- Validação dos campos obrigatórios.
+- Verificação de e-mails duplicados.
+- Tratamento de erros HTTP 400, 404 e 409.
+- Armazenamento de senhas com BCrypt.
+
+**Endpoints disponíveis:**
+
+| Método | Endpoint | Operação |
 |---|---|---|
 | POST | `/usuarios` | Cadastrar usuário |
 | GET | `/usuarios` | Listar usuários |
-| GET | `/usuarios/{id}` | Buscar usuário por ID |
+| GET | `/usuarios/{id}` | Consultar usuário |
 | PUT | `/usuarios/{id}` | Atualizar usuário |
 | DELETE | `/usuarios/{id}` | Excluir usuário |
 
-O cadastro possui validação de campos, verificação de e-mail duplicado e armazenamento de senhas com hash BCrypt.
+## Divisão de responsabilidades
 
-**Atenção:** a autenticação e as permissões de acesso ainda estão em desenvolvimento. Os endpoints não devem ser expostos publicamente nesta fase.
+O desenvolvimento está dividido entre cinco integrantes:
 
-## Trabalho em equipe
+| Módulo | Responsabilidade |
+|---|---|
+| Usuários | CRUD concluído |
+| Resíduos | Implementação do CRUD de resíduos |
+| Reservas | Implementação do CRUD de reservas e coletas |
+| Planos | Implementação do CRUD de planos |
+| Administração | CRUD de termos e operações administrativas |
 
-O desenvolvimento será realizado por meio de branches e Pull Requests.
+As atividades estão organizadas no **Jira**, na Sprint 1 do projeto EcoConecta.
 
-1. Atualize a branch `main` antes de iniciar uma nova tarefa.
-2. Crie uma branch para a funcionalidade que desenvolverá.
-3. Faça commits com descrições claras.
-4. Envie a branch para o GitHub.
-5. Abra um Pull Request para integrar as alterações à `main`.
+## Fluxo de trabalho com Git e GitHub
 
-Evite modificar diretamente a branch `main`.
+Cada integrante deverá trabalhar em sua própria branch, criada a partir da `main` atualizada.
 
-Cada integrante terá seu próprio banco de dados local. Portanto, os registros cadastrados em um computador não serão compartilhados automaticamente com os demais.
+**Branches sugeridas:**
 
-## Status do projeto
+```text
+feat/residuos
+feat/reservas
+feat/planos
+feat/administracao
+```
 
-**Concluído:** estrutura inicial do backend, conexão com PostgreSQL, CRUD básico de usuários, validações e hash de senhas.
+### Procedimento
 
-**Em desenvolvimento:** login, CRUD de resíduos, reservas e coletas, planos de assinatura, administração e frontend React.
+1. Atualizar a branch `main` antes de começar.
+2. Criar a branch correspondente ao módulo.
+3. Implementar as funcionalidades nas classes já existentes.
+4. Testar os endpoints no Postman.
+5. Realizar commit e push.
+6. Abrir um Pull Request para a `main`.
+7. Aguardar a revisão e integração das alterações.
+
+**Não desenvolver diretamente na branch `main`.**
+
+Como cada integrante possui um PostgreSQL local, os dados cadastrados em um computador não aparecem automaticamente nos bancos dos outros integrantes.
+
+## Regras de desenvolvimento
+
+- Manter a organização por funcionalidades.
+- Utilizar Controller, Service, Repository e Model.
+- Aplicar validações aos dados recebidos.
+- Retornar códigos HTTP adequados.
+- Evitar duplicação de regras de negócio.
+- Respeitar os relacionamentos entre entidades.
+- Não alterar o módulo de outro integrante sem combinar previamente.
+- Não publicar senhas ou arquivos sensíveis.
+- Testar as funcionalidades antes de abrir um Pull Request.
+
+## Escopo atual
+
+Nesta etapa, o objetivo é implementar os **CRUDs completos da aplicação**, conforme solicitado pelo professor e com base no Figma.
+
+A implementação do frontend, autenticação e demais funcionalidades avançadas será realizada posteriormente.
 
 ---
 
-Projeto acadêmico desenvolvido em equipe.
+**EcoConecta — Conectando pessoas e promovendo o reaproveitamento de resíduos.**
