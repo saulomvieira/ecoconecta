@@ -1,11 +1,13 @@
 
-package backend.service;
+package backend.usuarios.service;
 
-import backend.model.Usuario;
-import backend.repository.UsuarioRepository;
+import backend.usuarios.model.Usuario;
+import backend.usuarios.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -41,12 +43,20 @@ public class UsuarioService {
     // Buscar usuário pelo ID
     public Usuario buscarPorId(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Usuário não encontrado"
+                ));
     }
 
     // Atualizar usuário
     public Usuario atualizar(Long id, Usuario dados) {
         Usuario usuario = buscarPorId(id);
+
+        if (!usuario.getEmail().equals(dados.getEmail())
+                && repository.existsByEmail(dados.getEmail())) {
+            throw new IllegalArgumentException("Este e-mail já está cadastrado");
+        }
 
         usuario.setNome(dados.getNome());
         usuario.setEmail(dados.getEmail());

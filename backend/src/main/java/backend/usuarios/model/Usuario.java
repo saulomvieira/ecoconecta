@@ -1,4 +1,4 @@
-package backend.model;
+package backend.usuarios.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
