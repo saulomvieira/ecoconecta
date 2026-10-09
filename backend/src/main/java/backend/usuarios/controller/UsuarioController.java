@@ -1,8 +1,8 @@
 
-package backend.controller;
+package backend.usuarios.controller;
 
-import backend.model.Usuario;
-import backend.service.UsuarioService;
+import backend.usuarios.model.Usuario;
+import backend.usuarios.service.UsuarioService;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
