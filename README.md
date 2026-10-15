@@ -85,15 +85,15 @@ ecoconecta/
 │   │       │       │   └── model/
 │   │       │       │       └── Plano.java
 │   │       │       │
-│   │       │       ├── administracao/
+│   │       │       ├── termos/
 │   │       │       │   ├── controller/
-│   │       │       │   │   └── AdministracaoController.java
+│   │       │       │   │   └── TermoUsoController.java
 │   │       │       │   ├── service/
-│   │       │       │   │   └── AdministracaoService.java
+│   │       │       │   │   └── TermoUsoService.java
 │   │       │       │   ├── repository/
-│   │       │       │   │   └── AdministracaoRepository.java
+│   │       │       │   │   └── TermoUsoRepository.java
 │   │       │       │   └── model/
-│   │       │       │       └── Administracao.java
+│   │       │       │       └── TermoUso.java
 │   │       │       │
 │   │       │       ├── exception/
 │   │       │       │   └── GlobalExceptionHandler.java
@@ -109,7 +109,7 @@ ecoconecta/
 └── CONTRIBUTING.md
 ```
 
-**Importante:** as classes dos módulos de resíduos, reservas, planos e administração **já foram criadas**, mas estão inicialmente sem a implementação dos CRUDs.
+**Importante:** as classes dos módulos de resíduos, reservas, planos **já foram criadas**, mas estão inicialmente sem a implementação dos CRUDs.
 
 Cada integrante deverá desenvolver as funcionalidades dentro das classes existentes, respeitando a organização dos pacotes.
 
@@ -195,7 +195,8 @@ A API estará disponível em:
 | Resíduos | Classes criadas — CRUD pendente |
 | Reservas | Classes criadas — CRUD pendente |
 | Planos de assinatura | Classes criadas — CRUD pendente |
-| Administração e termos | Classes criadas — funcionalidades pendentes |
+| Assinaturas | Implementado (módulo `planos`) |
+| Termos de uso | Implementado (módulo `termos`) |
 
 ### CRUD de usuários
 
@@ -231,7 +232,7 @@ O desenvolvimento está dividido entre cinco integrantes:
 | Resíduos | Implementação do CRUD de resíduos |
 | Reservas | Implementação do CRUD de reservas e coletas |
 | Planos | Implementação do CRUD de planos |
-| Administração | CRUD de termos e operações administrativas |
+| Assinaturas e termos | Assinaturas (em `planos`) e termos de uso versionados (`termos`) |
 
 As atividades estão organizadas no **Jira**, na Sprint 1 do projeto EcoConecta.
 
@@ -245,7 +246,7 @@ Cada integrante deverá trabalhar em sua própria branch, criada a partir da `ma
 feat/residuos
 feat/reservas
 feat/planos
-feat/administracao
+feat/assinaturas-termos
 ```
 
 ### Procedimento
