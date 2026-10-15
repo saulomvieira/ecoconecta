@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import backend.usuarios.model.Usuario;
 
 import java.math.BigDecimal;
 
@@ -44,4 +45,8 @@ public class Residuo {
     private String unidadeMedida;
 
     private String regiao;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario usuario;
 }
