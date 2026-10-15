@@ -10,6 +10,7 @@ import backend.usuarios.repository.UsuarioRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,6 +32,7 @@ public class ReservaService {
     }
 
     // Cadastrar reserva
+    // Cadastrar reserva
     public Reserva cadastrar(Long usuarioId, Long residuoId) {
 
         Usuario usuario = usuarioRepository.findById(usuarioId)
@@ -45,7 +47,15 @@ public class ReservaService {
                         "Resíduo não encontrado"
                 ));
 
-        // Verifica se já existe uma reserva ativa
+        // Impede que o usuário reserve o próprio resíduo
+        if (residuo.getUsuario().getId().equals(usuarioId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "O usuário não pode reservar o próprio resíduo"
+            );
+        }
+
+        // Impede que o mesmo usuário tenha reservas ativas duplicadas
         boolean reservaExistente =
                 reservaRepository.existsByUsuarioIdAndResiduoIdAndStatus(
                         usuarioId,
@@ -60,6 +70,24 @@ public class ReservaService {
             );
         }
 
+        // Impede reservar resíduos já reservados ou coletados
+        boolean residuoIndisponivel =
+                reservaRepository.existsByResiduoIdAndStatusIn(
+                        residuoId,
+                        List.of(
+                                StatusReserva.RESERVADA,
+                                StatusReserva.COLETADA
+                        )
+                );
+
+        if (residuoIndisponivel) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Este resíduo já está reservado ou foi coletado"
+            );
+        }
+
+        // Cria a reserva
         Reserva reserva = new Reserva();
 
         reserva.setUsuario(usuario);
@@ -90,6 +118,15 @@ public class ReservaService {
 
         Reserva reserva = buscarPorId(id);
 
+        if (reserva.getStatus() == StatusReserva.CANCELADA ||
+                reserva.getStatus() == StatusReserva.COLETADA) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Não é possível alterar uma reserva cancelada ou coletada"
+            );
+        }
+
         reserva.setStatus(novoStatus);
 
         return reservaRepository.save(reserva);
@@ -100,8 +137,21 @@ public class ReservaService {
 
         Reserva reserva = buscarPorId(id);
 
-        reserva.setStatus(StatusReserva.CANCELADA);
+        if (reserva.getStatus() == StatusReserva.COLETADA) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Não é possível cancelar uma reserva já coletada"
+            );
+        }
 
+        if (reserva.getStatus() == StatusReserva.CANCELADA) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Esta reserva já está cancelada"
+            );
+        }
+
+        reserva.setStatus(StatusReserva.CANCELADA);
         reservaRepository.save(reserva);
     }
 }

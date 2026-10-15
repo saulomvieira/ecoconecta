@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,5 +37,19 @@ public class GlobalExceptionHandler {
         erro.put("email", exception.getMessage());
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(erro);
+    }
+
+    // Trata erros HTTP, como 404 e 409
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<Map<String, String>> tratarResponseStatus(
+            ResponseStatusException exception) {
+
+        Map<String, String> erro = new HashMap<>();
+
+        erro.put("message", exception.getReason());
+
+        return ResponseEntity
+                .status(exception.getStatusCode())
+                .body(erro);
     }
 }

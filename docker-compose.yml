@@ -13,6 +13,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
       DB_PASSWORD: ${DB_PASSWORD}
+      SERVER_ERROR_INCLUDE_STACKTRACE: never
     depends_on:
       db:
         condition: service_healthy

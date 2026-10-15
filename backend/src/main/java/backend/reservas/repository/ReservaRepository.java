@@ -11,4 +11,9 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
             Long residuoId,
             StatusReserva status
     );
+
+    boolean existsByResiduoIdAndStatusIn(
+            Long residuoId,
+            java.util.Collection<StatusReserva> status
+    );
 }
