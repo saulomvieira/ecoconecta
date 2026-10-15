@@ -1,11 +1,10 @@
 package backend.reservas.model;
-
+import backend.residuos.model.Residuo;
 import backend.usuarios.model.Usuario;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -15,7 +14,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Reserva {
 
-    // Situação da reserva: ativa, coletada ou cancelada
     public enum StatusReserva {
         RESERVADA,
         COLETADA,
@@ -26,18 +24,18 @@ public class Reserva {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Usuário que reservou a coleta
     @ManyToOne(optional = false)
+    @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    // Id do resíduo reservado (o módulo de resíduos ainda não é uma entidade JPA)
-    @Column(nullable = false)
-    private Long residuoId;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "residuo_id", nullable = false)
+    private Residuo residuo;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private StatusReserva status;
 
-    @Column(nullable = false)
+    @Column(name = "data_reserva", nullable = false)
     private LocalDateTime dataReserva;
 }
