@@ -1,9 +1,9 @@
-package backend.planos.service;
+package backend.assinaturas.service;
 
-import backend.planos.model.Assinatura;
+import backend.assinaturas.model.Assinatura;
 import backend.planos.model.Plano;
-import backend.planos.model.StatusAssinatura;
-import backend.planos.repository.AssinaturaRepository;
+import backend.assinaturas.model.StatusAssinatura;
+import backend.assinaturas.repository.AssinaturaRepository;
 import backend.planos.repository.PlanoRepository;
 import backend.usuarios.model.Usuario;
 import backend.usuarios.repository.UsuarioRepository;
@@ -65,13 +65,21 @@ public class AssinaturaService {
             assinatura.setPlano(buscarPlano(dados));
         }
 
-        if (dados.getStatus() != null && dados.getStatus() != assinatura.getStatus()) {
+        if (dados.getStatus() != null
+                && dados.getStatus() != assinatura.getStatus()) {
+
             if (dados.getStatus() == StatusAssinatura.ATIVA
-                    && repository.existsByUsuarioIdAndStatus(
-                    assinatura.getUsuario().getId(), StatusAssinatura.ATIVA)) {
+                    && repository.existsByUsuarioIdAndStatusAndIdNot(
+                    assinatura.getUsuario().getId(),
+                    StatusAssinatura.ATIVA,
+                    assinatura.getId())) {
+
                 throw new ResponseStatusException(
-                        HttpStatus.CONFLICT, "O usuário já possui uma assinatura ativa");
+                        HttpStatus.CONFLICT,
+                        "O usuário já possui outra assinatura ativa"
+                );
             }
+
             assinatura.setStatus(dados.getStatus());
         }
 

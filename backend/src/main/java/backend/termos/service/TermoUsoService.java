@@ -39,7 +39,7 @@ public class TermoUsoService {
                         HttpStatus.NOT_FOUND, "Usuário não encontrado"));
 
         String versao = VERSAO_INICIAL;
-        TermoUso atual = repository.findFirstByAtivoTrue().orElse(null);
+        TermoUso atual = repository.findFirstByAtivoTrueOrderByDataAtualizacaoDesc().orElse(null);
 
         if (atual != null) {
             if (atual.getConteudo().equals(termo.getConteudo())) {
@@ -61,7 +61,7 @@ public class TermoUsoService {
     }
 
     public TermoUso buscarAtual() {
-        return repository.findFirstByAtivoTrue()
+        return repository.findFirstByAtivoTrueOrderByDataAtualizacaoDesc()
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Nenhum termo de uso publicado"));
     }

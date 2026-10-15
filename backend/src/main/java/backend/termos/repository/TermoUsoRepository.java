@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface TermoUsoRepository extends JpaRepository<TermoUso, Long> {
 
-    Optional<TermoUso> findFirstByAtivoTrue();
+    Optional<TermoUso> findFirstByAtivoTrueOrderByDataAtualizacaoDesc();
 
     List<TermoUso> findAllByOrderByDataAtualizacaoDesc();
 }

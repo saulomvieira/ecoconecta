@@ -1,5 +1,6 @@
-package backend.planos.model;
+package backend.assinaturas.model;
 
+import backend.planos.model.Plano;
 import backend.usuarios.model.Usuario;
 import jakarta.persistence.*;
 import lombok.Getter;

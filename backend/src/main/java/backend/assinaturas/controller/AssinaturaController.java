@@ -1,8 +1,8 @@
-package backend.planos.controller;
+package backend.assinaturas.controller;
 
-import backend.planos.model.Assinatura;
-import backend.planos.model.StatusAssinatura;
-import backend.planos.service.AssinaturaService;
+import backend.assinaturas.model.Assinatura;
+import backend.assinaturas.model.StatusAssinatura;
+import backend.assinaturas.service.AssinaturaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
