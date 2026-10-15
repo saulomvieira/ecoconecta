@@ -3,104 +3,90 @@ package backend.reservas.service;
 import backend.reservas.model.Reserva;
 import backend.reservas.model.Reserva.StatusReserva;
 import backend.reservas.repository.ReservaRepository;
+import backend.residuos.model.Residuo;
+import backend.residuos.repository.ResiduoRepository;
 import backend.usuarios.model.Usuario;
-import backend.usuarios.service.UsuarioService;
+import backend.usuarios.repository.UsuarioRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class ReservaService {
 
-    // Plano Gratuito: máximo de coletas por mês (RGN09)
-    private static final int LIMITE_COLETAS_MES = 4;
+    private final ReservaRepository reservaRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final ResiduoRepository residuoRepository;
 
-    private final ReservaRepository repository;
-    private final UsuarioService usuarioService;
+    public ReservaService(
+            ReservaRepository reservaRepository,
+            UsuarioRepository usuarioRepository,
+            ResiduoRepository residuoRepository) {
 
-    public ReservaService(ReservaRepository repository, UsuarioService usuarioService) {
-        this.repository = repository;
-        this.usuarioService = usuarioService;
+        this.reservaRepository = reservaRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.residuoRepository = residuoRepository;
     }
 
-    // Reservar coleta
-    public Reserva reservar(Long usuarioId, Long residuoId) {
-        Usuario usuario = usuarioService.buscarPorId(usuarioId);
+    // Cadastrar reserva
+    public Reserva cadastrar(Long usuarioId, Long residuoId) {
 
-        // Resíduo já reservado ou coletado não pode ser reservado novamente
-        if (repository.existsByResiduoIdAndStatusIn(
-                residuoId, List.of(StatusReserva.RESERVADA, StatusReserva.COLETADA))) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Resíduo indisponível para reserva");
-        }
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Usuário não encontrado"
+                ));
 
-        // Conta as coletas do mês, ignorando as canceladas
-        LocalDateTime inicioDoMes = LocalDate.now().withDayOfMonth(1).atStartOfDay();
-        long coletasNoMes = repository.countByUsuarioIdAndStatusNotAndDataReservaGreaterThanEqual(
-                usuarioId, StatusReserva.CANCELADA, inicioDoMes);
-        if (coletasNoMes >= LIMITE_COLETAS_MES) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Limite de coletas do mês atingido no plano Gratuito");
-        }
+        Residuo residuo = residuoRepository.findById(residuoId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Resíduo não encontrado"
+                ));
 
         Reserva reserva = new Reserva();
+
         reserva.setUsuario(usuario);
-        reserva.setResiduoId(residuoId);
+        reserva.setResiduo(residuo);
         reserva.setStatus(StatusReserva.RESERVADA);
         reserva.setDataReserva(LocalDateTime.now());
 
-        return repository.save(reserva);
+        return reservaRepository.save(reserva);
     }
 
-    // Listar reservas
+    // Listar todas as reservas
     public List<Reserva> listar() {
-        return repository.findAll();
+        return reservaRepository.findAll();
     }
 
-    // Buscar reserva pelo ID
+    // Buscar uma reserva pelo ID
     public Reserva buscarPorId(Long id) {
-        return repository.findById(id)
+
+        return reservaRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Reserva não encontrada"
                 ));
     }
 
-    // Atualizar status da reserva (registrar coleta)
-    public Reserva atualizarStatus(Long id, StatusReserva novoStatus) {
-        Reserva reserva = buscarPorId(id);
-        verificarReservada(reserva);
+    // Atualizar o status da reserva
+    public Reserva atualizar(Long id, StatusReserva novoStatus) {
 
-        if (novoStatus != StatusReserva.COLETADA) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "A atualização aceita apenas o status COLETADA. Para cancelar, use PATCH /reservas/{id}/cancelar"
-            );
-        }
+        Reserva reserva = buscarPorId(id);
 
         reserva.setStatus(novoStatus);
-        return repository.save(reserva);
+
+        return reservaRepository.save(reserva);
     }
 
-    // Cancelar reserva (o registro é mantido para histórico)
-    public Reserva cancelar(Long id) {
+    // Cancelar reserva
+    public void excluir(Long id) {
+
         Reserva reserva = buscarPorId(id);
-        verificarReservada(reserva);
 
         reserva.setStatus(StatusReserva.CANCELADA);
-        return repository.save(reserva);
-    }
 
-    // Apenas reservas ativas podem ser alteradas
-    private void verificarReservada(Reserva reserva) {
-        if (reserva.getStatus() != StatusReserva.RESERVADA) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "Só é possível alterar reservas com status RESERVADA"
-            );
-        }
+        reservaRepository.save(reserva);
     }
 }
-
