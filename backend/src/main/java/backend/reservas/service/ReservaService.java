@@ -45,6 +45,21 @@ public class ReservaService {
                         "Resíduo não encontrado"
                 ));
 
+        // Verifica se já existe uma reserva ativa
+        boolean reservaExistente =
+                reservaRepository.existsByUsuarioIdAndResiduoIdAndStatus(
+                        usuarioId,
+                        residuoId,
+                        StatusReserva.RESERVADA
+                );
+
+        if (reservaExistente) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Este usuário já possui uma reserva ativa para este resíduo"
+            );
+        }
+
         Reserva reserva = new Reserva();
 
         reserva.setUsuario(usuario);
