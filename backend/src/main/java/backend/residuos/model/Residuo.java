@@ -1,6 +1,7 @@
 
 package backend.residuos.model;
 
+import backend.usuarios.model.Usuario;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
@@ -8,7 +9,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import backend.usuarios.model.Usuario;
 
 import java.math.BigDecimal;
 
@@ -44,7 +44,16 @@ public class Residuo {
     @Column(nullable = false)
     private String unidadeMedida;
 
+    @NotBlank(message = "A região é obrigatória")
+    @Column(nullable = false)
     private String regiao;
+
+    @NotBlank(message = "O endereço de coleta é obrigatório")
+    @Column(nullable = false)
+    private String enderecoColeta;
+
+    @Column(length = 1000)
+    private String imagemUrl;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)

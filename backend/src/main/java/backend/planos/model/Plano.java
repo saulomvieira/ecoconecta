@@ -31,6 +31,9 @@ public class Plano {
     @Min(value = 0, message = "O limite de coletas não pode ser negativo")
     private Integer limiteColetasMes;
 
+    @Min(value = 0, message = "O limite semanal não pode ser negativo")
+    private Integer limiteColetasSemana;
+
     @NotBlank(message = "Os benefícios são obrigatórios")
     @Column(nullable = false, columnDefinition = "TEXT")
     private String beneficios;
