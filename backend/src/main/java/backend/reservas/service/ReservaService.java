@@ -10,6 +10,9 @@ import backend.usuarios.repository.UsuarioRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,6 +37,13 @@ public class ReservaService {
     // Cadastrar reserva
     // Cadastrar reserva
     public Reserva cadastrar(Long usuarioId, Long residuoId) {
+
+        if (!ehAdmin() && !usuarioAutenticadoId().equals(usuarioId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Você não pode criar reservas em nome de outro usuário"
+            );
+        }
 
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -100,17 +110,27 @@ public class ReservaService {
 
     // Listar todas as reservas
     public List<Reserva> listar() {
+        if (!ehAdmin()) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Acesso permitido apenas para administradores"
+            );
+        }
+
         return reservaRepository.findAll();
     }
 
     // Buscar uma reserva pelo ID
     public Reserva buscarPorId(Long id) {
-
-        return reservaRepository.findById(id)
+        Reserva reserva = reservaRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Reserva não encontrada"
                 ));
+
+        exigirProprietarioOuAdmin(reserva);
+
+        return reserva;
     }
 
     // Atualizar o status da reserva
@@ -153,5 +173,38 @@ public class ReservaService {
 
         reserva.setStatus(StatusReserva.CANCELADA);
         reservaRepository.save(reserva);
+    }
+
+    private Jwt obterJwt() {
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null
+                || !(authentication.getPrincipal() instanceof Jwt jwt)) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Autenticação necessária"
+            );
+        }
+
+        return jwt;
+    }
+
+    private Long usuarioAutenticadoId() {
+        return Long.valueOf(obterJwt().getSubject());
+    }
+
+    private boolean ehAdmin() {
+        return "ADMIN".equals(obterJwt().getClaimAsString("perfil"));
+    }
+
+    private void exigirProprietarioOuAdmin(Reserva reserva) {
+        if (!ehAdmin()
+                && !reserva.getUsuario().getId().equals(usuarioAutenticadoId())) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Você não tem permissão para acessar esta reserva"
+            );
+        }
     }
 }

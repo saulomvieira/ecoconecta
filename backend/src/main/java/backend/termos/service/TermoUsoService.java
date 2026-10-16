@@ -8,6 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,14 +32,31 @@ public class TermoUsoService {
     // Cada salvamento cria uma nova versão; as anteriores ficam no histórico
     @Transactional
     public TermoUso publicar(TermoUso termo) {
-        if (termo.getAtualizadoPor() == null || termo.getAtualizadoPor().getId() == null) {
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null ||
+                !(authentication.getPrincipal() instanceof Jwt jwt)) {
             throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "O usuário responsável é obrigatório");
+                    HttpStatus.UNAUTHORIZED,
+                    "Autenticação necessária"
+            );
         }
 
-        Usuario autor = usuarioRepository.findById(termo.getAtualizadoPor().getId())
+        if (!"ADMIN".equals(jwt.getClaimAsString("perfil"))) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Apenas administradores podem publicar termos de uso"
+            );
+        }
+
+        Long autorId = Long.valueOf(jwt.getSubject());
+
+        Usuario autor = usuarioRepository.findById(autorId)
                 .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+                        HttpStatus.NOT_FOUND,
+                        "Administrador não encontrado"
+                ));
 
         String versao = VERSAO_INICIAL;
         TermoUso atual = repository.findFirstByAtivoTrueOrderByDataAtualizacaoDesc().orElse(null);
