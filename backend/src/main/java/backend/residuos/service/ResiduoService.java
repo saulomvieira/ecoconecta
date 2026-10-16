@@ -85,6 +85,8 @@ public class ResiduoService {
         residuo.setQuantidade(dados.getQuantidade());
         residuo.setUnidadeMedida(dados.getUnidadeMedida());
         residuo.setRegiao(dados.getRegiao());
+        residuo.setEnderecoColeta(dados.getEnderecoColeta());
+        residuo.setImagemUrl(dados.getImagemUrl());
 
         // O proprietário não pode ser alterado por este endpoint.
         return repository.save(residuo);

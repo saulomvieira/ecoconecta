@@ -1,8 +1,12 @@
+
 package backend.reservas.repository;
 
 import backend.reservas.model.Reserva;
 import backend.reservas.model.Reserva.StatusReserva;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.time.LocalDateTime;
+import java.util.Collection;
 
 public interface ReservaRepository extends JpaRepository<Reserva, Long> {
 
@@ -14,6 +18,13 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
 
     boolean existsByResiduoIdAndStatusIn(
             Long residuoId,
-            java.util.Collection<StatusReserva> status
+            Collection<StatusReserva> status
+    );
+
+    long countByUsuarioIdAndStatusInAndDataReservaGreaterThanEqualAndDataReservaLessThan(
+            Long usuarioId,
+            Collection<StatusReserva> status,
+            LocalDateTime inicio,
+            LocalDateTime fim
     );
 }
