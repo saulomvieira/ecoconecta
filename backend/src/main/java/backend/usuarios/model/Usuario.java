@@ -34,4 +34,8 @@ public class Usuario {
     private String senha;
 
     private String regiao;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "perfil", nullable = false)
+    private Perfil perfil = Perfil.USUARIO;
 }
