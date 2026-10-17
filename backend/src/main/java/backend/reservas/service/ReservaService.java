@@ -150,14 +150,60 @@ public class ReservaService {
     // Atualizar status da reserva
     public Reserva atualizar(Long id, StatusReserva novoStatus) {
 
-        Reserva reserva = buscarPorId(id);
+        if (novoStatus == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "O novo status é obrigatório"
+            );
+        }
 
-        if (reserva.getStatus() == StatusReserva.CANCELADA ||
-                reserva.getStatus() == StatusReserva.COLETADA) {
+        Reserva reserva = reservaRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Reserva não encontrada"
+                ));
 
+        // Somente reservas ativas podem mudar de status
+        if (reserva.getStatus() != StatusReserva.RESERVADA) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "Não é possível alterar uma reserva cancelada ou coletada"
+            );
+        }
+
+        Long usuarioId = usuarioAutenticadoId();
+        boolean admin = ehAdmin();
+
+        if (novoStatus == StatusReserva.CANCELADA) {
+
+            // Somente quem fez a reserva ou ADMIN pode cancelar
+            Long donoReservaId = reserva.getUsuario().getId();
+
+            if (!admin && !donoReservaId.equals(usuarioId)) {
+                throw new ResponseStatusException(
+                        HttpStatus.FORBIDDEN,
+                        "Somente quem fez a reserva ou um administrador pode cancelá-la"
+                );
+            }
+
+        } else if (novoStatus == StatusReserva.COLETADA) {
+
+            // Somente o dono do resíduo ou ADMIN pode confirmar a coleta
+            Long donoResiduoId = reserva.getResiduo()
+                    .getUsuario()
+                    .getId();
+
+            if (!admin && !donoResiduoId.equals(usuarioId)) {
+                throw new ResponseStatusException(
+                        HttpStatus.FORBIDDEN,
+                        "Somente o dono do resíduo ou um administrador pode confirmar a coleta"
+                );
+            }
+
+        } else {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Status inválido. Use CANCELADA ou COLETADA"
             );
         }
 
@@ -165,6 +211,7 @@ public class ReservaService {
 
         return reservaRepository.save(reserva);
     }
+
 
     // Cancelar reserva
     public void excluir(Long id) {
