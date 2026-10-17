@@ -78,4 +78,10 @@ public class ReservaController {
             StatusReserva status
 
     ) {}
+
+    // Listar reservas do usuário autenticado
+    @GetMapping("/minhas")
+    public List<Reserva> listarMinhasReservas() {
+        return reservaService.listarMinhasReservas();
+    }
 }

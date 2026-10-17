@@ -133,6 +133,15 @@ public class ReservaService {
         return reservaRepository.findAll();
     }
 
+    // Listar reservas do usuário autenticado
+    public List<Reserva> listarMinhasReservas() {
+
+        Long usuarioId = usuarioAutenticadoId();
+
+        return reservaRepository
+                .findByUsuarioIdOrderByDataReservaDesc(usuarioId);
+    }
+
     // Buscar reserva por ID
     public Reserva buscarPorId(Long id) {
 

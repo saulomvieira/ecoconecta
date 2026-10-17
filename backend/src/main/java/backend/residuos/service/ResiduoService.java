@@ -12,21 +12,33 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import backend.residuos.dto.ResiduoDisponibilidadeResponse;
+import backend.reservas.model.Reserva.StatusReserva;
+import backend.reservas.repository.ReservaRepository;
+import java.util.Map;
+import java.util.Set;
+import java.util.HashMap;
+import java.util.stream.Collectors;
+import backend.reservas.model.Reserva;
 
 import java.util.List;
 
 @Service
 public class ResiduoService {
 
+    private final ReservaRepository reservaRepository;
     private final ResiduoRepository repository;
     private final UsuarioRepository usuarioRepository;
 
+
     public ResiduoService(
             ResiduoRepository repository,
-            UsuarioRepository usuarioRepository) {
+            UsuarioRepository usuarioRepository,
+            ReservaRepository reservaRepository) {
 
         this.repository = repository;
         this.usuarioRepository = usuarioRepository;
+        this.reservaRepository = reservaRepository;
     }
 
     // Cadastrar resíduo
@@ -72,12 +84,30 @@ public class ResiduoService {
                 ));
     }
 
+
     // Atualizar resíduo
     public Residuo atualizar(Long id, Residuo dados) {
 
         Residuo residuo = buscarPorId(id);
 
+        // Somente o proprietário ou ADMIN pode atualizar
         exigirProprietarioOuAdmin(residuo.getUsuario().getId());
+
+        // Impede alterar resíduos reservados ou coletados
+        boolean indisponivel = reservaRepository.existsByResiduoIdAndStatusIn(
+                id,
+                List.of(
+                        StatusReserva.RESERVADA,
+                        StatusReserva.COLETADA
+                )
+        );
+
+        if (indisponivel) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Não é possível alterar um resíduo reservado ou coletado"
+            );
+        }
 
         residuo.setNome(dados.getNome());
         residuo.setDescricao(dados.getDescricao());
@@ -88,19 +118,182 @@ public class ResiduoService {
         residuo.setEnderecoColeta(dados.getEnderecoColeta());
         residuo.setImagemUrl(dados.getImagemUrl());
 
-        // O proprietário não pode ser alterado por este endpoint.
+        // O proprietário não pode ser alterado
         return repository.save(residuo);
     }
+
 
     // Excluir resíduo
     public void excluir(Long id) {
 
         Residuo residuo = buscarPorId(id);
 
+        // Somente o proprietário ou ADMIN pode excluir
         exigirProprietarioOuAdmin(residuo.getUsuario().getId());
+
+        // Impede excluir resíduos que possuem histórico de reservas
+        if (reservaRepository.existsByResiduoId(id)) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Não é possível excluir um resíduo que possui histórico de reservas"
+            );
+        }
 
         repository.delete(residuo);
     }
+
+    // Listar resíduos publicados por um usuário
+    public List<Residuo> listarPorUsuario(Long usuarioId) {
+        return repository.findByUsuarioId(usuarioId);
+    }
+
+    // Listar resíduos de uma região
+    public List<Residuo> listarPorRegiao(String regiao) {
+        if (regiao == null || regiao.isBlank()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "A região é obrigatória"
+            );
+        }
+
+        return repository.findByRegiaoIgnoreCase(regiao.trim());
+    }
+
+    // Listar resíduos mais recentes
+    public List<Residuo> listarRecentes() {
+        return repository.findAllByOrderByIdDesc();
+    }
+
+    // Listar feed de resíduos com disponibilidade e prioridade por região
+    public List<ResiduoDisponibilidadeResponse> listarFeed(
+            String regiao,
+            boolean priorizarRegiao) {
+
+        List<Residuo> residuos;
+
+        if (regiao != null && !regiao.isBlank()) {
+
+            String regiaoNormalizada = regiao.trim();
+
+            if (priorizarRegiao) {
+                // Exibe todas as regiões, priorizando a selecionada
+                residuos = repository.findAllPriorizandoRegiao(
+                        regiaoNormalizada
+                );
+            } else {
+                // Exibe somente os resíduos da região selecionada
+                residuos = repository.findByRegiaoIgnoreCase(
+                        regiaoNormalizada
+                );
+            }
+
+        } else {
+            // Sem região, exibe os resíduos mais recentes
+            residuos = repository.findAllByOrderByIdDesc();
+        }
+
+        if (residuos.isEmpty()) {
+            return List.of();
+        }
+
+        // Obtém os IDs dos resíduos encontrados
+        Set<Long> ids = residuos.stream()
+                .map(Residuo::getId)
+                .collect(Collectors.toSet());
+
+        // Busca reservas ativas ou concluídas
+        List<Reserva> reservas = reservaRepository
+                .findByResiduoIdInAndStatusIn(
+                        ids,
+                        List.of(
+                                StatusReserva.RESERVADA,
+                                StatusReserva.COLETADA
+                        )
+                );
+
+        // Relaciona cada resíduo ao seu status
+        Map<Long, String> statusPorResiduo = new HashMap<>();
+
+        for (Reserva reserva : reservas) {
+
+            Long residuoId = reserva.getResiduo().getId();
+
+            if (reserva.getStatus() == StatusReserva.COLETADA) {
+
+                statusPorResiduo.put(residuoId, "COLETADO");
+
+            } else {
+
+                statusPorResiduo.putIfAbsent(
+                        residuoId,
+                        "RESERVADO"
+                );
+            }
+        }
+
+        // Retorna os resíduos com suas disponibilidades
+        return residuos.stream()
+                .map(residuo -> new ResiduoDisponibilidadeResponse(
+                        residuo,
+                        statusPorResiduo.getOrDefault(
+                                residuo.getId(),
+                                "DISPONIVEL"
+                        )
+                ))
+                .toList();
+    }
+
+    // Listar feed de resíduos com disponibilidade
+    public List<ResiduoDisponibilidadeResponse> listarFeed(String regiao) {
+
+        List<Residuo> residuos;
+
+        if (regiao != null && !regiao.isBlank()) {
+            residuos = repository.findByRegiaoIgnoreCase(regiao.trim());
+        } else {
+            residuos = repository.findAllByOrderByIdDesc();
+        }
+
+        if (residuos.isEmpty()) {
+            return List.of();
+        }
+
+        Set<Long> ids = residuos.stream()
+                .map(Residuo::getId)
+                .collect(Collectors.toSet());
+
+        List<Reserva> reservas = reservaRepository
+                .findByResiduoIdInAndStatusIn(
+                        ids,
+                        List.of(
+                                StatusReserva.RESERVADA,
+                                StatusReserva.COLETADA
+                        )
+                );
+
+        Map<Long, String> statusPorResiduo = new HashMap<>();
+
+        for (Reserva reserva : reservas) {
+            Long residuoId = reserva.getResiduo().getId();
+
+            if (reserva.getStatus() == StatusReserva.COLETADA) {
+                statusPorResiduo.put(residuoId, "COLETADO");
+            } else {
+                statusPorResiduo.putIfAbsent(residuoId, "RESERVADO");
+            }
+        }
+
+        return residuos.stream()
+                .map(residuo -> new ResiduoDisponibilidadeResponse(
+                        residuo,
+                        statusPorResiduo.getOrDefault(
+                                residuo.getId(),
+                                "DISPONIVEL"
+                        )
+                ))
+                .toList();
+    }
+
 
     // Verifica se o usuário é proprietário ou administrador
     private void exigirProprietarioOuAdmin(Long usuarioId) {
@@ -134,4 +327,30 @@ public class ResiduoService {
 
         return jwt;
     }
+
+
+    // Consultar a disponibilidade de um resíduo
+    public ResiduoDisponibilidadeResponse consultarDisponibilidade(Long id) {
+
+        Residuo residuo = buscarPorId(id);
+
+        String status;
+
+        if (reservaRepository.existsByResiduoIdAndStatus(
+                id, StatusReserva.COLETADA)) {
+
+            status = "COLETADO";
+
+        } else if (reservaRepository.existsByResiduoIdAndStatus(
+                id, StatusReserva.RESERVADA)) {
+
+            status = "RESERVADO";
+
+        } else {
+            status = "DISPONIVEL";
+        }
+
+        return new ResiduoDisponibilidadeResponse(residuo, status);
+    }
+
 }
