@@ -51,19 +51,28 @@ public class AssinaturaService {
 
         Plano plano = buscarPlano(assinatura);
 
+        repository.findByUsuarioIdAndStatus(
+                usuario.getId(),
+                StatusAssinatura.ATIVA
+        ).ifPresent(this::verificarExpiracao);
+
         if (repository.existsByUsuarioIdAndStatus(
-                usuario.getId(), StatusAssinatura.ATIVA)) {
+                usuario.getId(),
+                StatusAssinatura.ATIVA)) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "O usuário já possui uma assinatura ativa"
             );
         }
 
+        LocalDate hoje = LocalDate.now();
+
         assinatura.setId(null);
         assinatura.setUsuario(usuario);
         assinatura.setPlano(plano);
         assinatura.setStatus(StatusAssinatura.ATIVA);
-        assinatura.setDataInicio(LocalDate.now());
+        assinatura.setDataInicio(hoje);
+        assinatura.setDataFim(hoje.plusDays(30));
 
         return repository.save(assinatura);
     }
@@ -87,6 +96,8 @@ public class AssinaturaService {
                 ));
 
         exigirProprietarioOuAdmin(assinatura.getUsuario().getId());
+
+        verificarExpiracao(assinatura);
 
         return assinatura;
     }
@@ -136,6 +147,77 @@ public class AssinaturaService {
         }
 
         assinatura.setStatus(StatusAssinatura.CANCELADA);
+
+        return repository.save(assinatura);
+    }
+
+    // Verificar se uma assinatura venceu
+    private boolean verificarExpiracao(Assinatura assinatura) {
+
+        if (assinatura.getStatus() != StatusAssinatura.ATIVA) {
+            return false;
+        }
+
+        LocalDate dataFim = assinatura.getDataFim();
+
+        if (dataFim == null) {
+            return false;
+        }
+
+        if (!LocalDate.now().isBefore(dataFim)) {
+            assinatura.setStatus(StatusAssinatura.EXPIRADA);
+            repository.save(assinatura);
+            return true;
+        }
+
+        return false;
+    }
+
+    // Renovar assinatura por mais 30 dias — somente ADMIN
+    public Assinatura renovar(Long id) {
+
+        exigirAdmin();
+
+        Assinatura assinatura = repository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Assinatura não encontrada"
+                ));
+
+        if (assinatura.getStatus() == StatusAssinatura.CANCELADA) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Não é possível renovar uma assinatura cancelada"
+            );
+        }
+
+        repository.findByUsuarioIdAndStatus(
+                assinatura.getUsuario().getId(),
+                StatusAssinatura.ATIVA
+        ).ifPresent(this::verificarExpiracao);
+
+        if (repository.existsByUsuarioIdAndStatusAndIdNot(
+                assinatura.getUsuario().getId(),
+                StatusAssinatura.ATIVA,
+                assinatura.getId()
+        )) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "O usuário já possui outra assinatura ativa"
+            );
+        }
+
+        LocalDate hoje = LocalDate.now();
+
+        // Se ainda estiver válida, acrescenta 30 dias ao vencimento atual.
+        // Caso contrário, inicia um novo período a partir de hoje.
+        LocalDate base = assinatura.getDataFim() != null
+                && assinatura.getDataFim().isAfter(hoje)
+                ? assinatura.getDataFim()
+                : hoje;
+
+        assinatura.setDataFim(base.plusDays(30));
+        assinatura.setStatus(StatusAssinatura.ATIVA);
 
         return repository.save(assinatura);
     }

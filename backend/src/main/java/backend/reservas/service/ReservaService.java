@@ -246,11 +246,21 @@ public class ReservaService {
                 )
                 .orElse(null);
 
+        if (assinatura != null
+                && assinatura.getDataFim() != null
+                && !LocalDate.now().isBefore(assinatura.getDataFim())) {
+
+            assinatura.setStatus(StatusAssinatura.EXPIRADA);
+            assinaturaRepository.save(assinatura);
+        }
+
         // Plano Gratuito por padrão
         Integer limiteMensal = 4;
         Integer limiteSemanal = 1;
 
-        if (assinatura != null) {
+        if (assinatura != null
+                && assinatura.getDataFim() != null
+                && LocalDate.now().isBefore(assinatura.getDataFim())) {
 
             Plano plano = assinatura.getPlano();
 

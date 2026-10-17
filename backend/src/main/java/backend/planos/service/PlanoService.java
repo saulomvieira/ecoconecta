@@ -38,6 +38,7 @@ public class PlanoService {
         plano.setNome(dados.getNome());
         plano.setPreco(dados.getPreco());
         plano.setLimiteColetasMes(dados.getLimiteColetasMes());
+        plano.setLimiteColetasSemana(dados.getLimiteColetasSemana());
         plano.setBeneficios(dados.getBeneficios());
         plano.setAtivo(dados.getAtivo());
 

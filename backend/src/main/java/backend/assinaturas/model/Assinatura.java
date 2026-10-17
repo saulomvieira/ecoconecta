@@ -34,4 +34,7 @@ public class Assinatura {
 
     @Column(nullable = false)
     private LocalDate dataInicio;
+
+    @Column(name = "data_fim")
+    private LocalDate dataFim;
 }
