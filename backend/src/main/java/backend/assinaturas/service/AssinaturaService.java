@@ -51,6 +51,10 @@ public class AssinaturaService {
 
         Plano plano = buscarPlano(assinatura);
 
+        if (!Boolean.TRUE.equals(plano.getAtivo())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Plano inativo");
+        }
+
         repository.findByUsuarioIdAndStatus(
                 usuario.getId(),
                 StatusAssinatura.ATIVA

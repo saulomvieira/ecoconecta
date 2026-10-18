@@ -1,6 +1,7 @@
 package backend.planos.service;
 
 import backend.planos.model.Plano;
+import backend.assinaturas.repository.AssinaturaRepository;
 import backend.planos.repository.PlanoRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -12,9 +13,11 @@ import java.util.List;
 public class PlanoService {
 
     private final PlanoRepository planoRepository;
+    private final AssinaturaRepository assinaturaRepository;
 
-    public PlanoService(PlanoRepository planoRepository) {
+    public PlanoService(PlanoRepository planoRepository, AssinaturaRepository assinaturaRepository) {
         this.planoRepository = planoRepository;
+        this.assinaturaRepository = assinaturaRepository;
     }
 
     public Plano cadastrar(Plano plano) {
@@ -47,6 +50,10 @@ public class PlanoService {
 
     public void excluir(Long id) {
         Plano plano = buscarPorId(id);
+        if (assinaturaRepository.existsByPlanoId(id)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "O plano possui histórico de assinaturas; desative-o em vez de excluir");
+        }
         planoRepository.delete(plano);
     }
 }

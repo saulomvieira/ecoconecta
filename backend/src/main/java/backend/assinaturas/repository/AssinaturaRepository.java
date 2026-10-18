@@ -27,4 +27,9 @@ public interface AssinaturaRepository extends JpaRepository<Assinatura, Long> {
             Long usuarioId,
             StatusAssinatura status
     );
+
+    // Contar assinaturas por status
+    long countByStatus(StatusAssinatura status);
+    boolean existsByPlanoId(Long planoId);
+
 }

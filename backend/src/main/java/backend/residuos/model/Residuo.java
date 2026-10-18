@@ -9,6 +9,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.time.LocalDateTime;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 
@@ -58,4 +60,9 @@ public class Residuo {
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
+
+    // Data e hora de cadastro do resíduo
+    @CreationTimestamp
+    @Column(name = "data_cadastro", updatable = false)
+    private LocalDateTime dataCadastro;
 }
