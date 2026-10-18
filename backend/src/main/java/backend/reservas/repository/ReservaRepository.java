@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
-
 import java.util.List;
 
 public interface ReservaRepository extends JpaRepository<Reserva, Long> {
@@ -51,4 +50,6 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
 
     // Contar reservas por status
     long countByStatus(StatusReserva status);
+
+    List<Reserva> findTop10ByOrderByDataReservaDesc();
 }

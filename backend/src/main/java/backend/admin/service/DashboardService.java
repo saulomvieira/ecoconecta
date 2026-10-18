@@ -7,6 +7,16 @@ import backend.reservas.model.Reserva.StatusReserva;
 import backend.reservas.repository.ReservaRepository;
 import backend.residuos.repository.ResiduoRepository;
 import backend.usuarios.repository.UsuarioRepository;
+import backend.admin.dto.ResiduoMensalResponse;
+
+import java.util.List;
+
+import backend.admin.dto.AtividadeRecenteResponse;
+import backend.reservas.model.Reserva;
+import backend.residuos.model.Residuo;
+
+import java.util.ArrayList;
+import java.util.Comparator;
 
 import org.springframework.stereotype.Service;
 
@@ -57,5 +67,60 @@ public class DashboardService {
                 reservasAtivas,
                 assinaturasAtivas
         );
+    }
+
+    public List<ResiduoMensalResponse> listarResiduosPorMes() {
+
+        List<Object[]> resultados = residuoRepository.contarResiduosPorMes();
+
+        return resultados.stream()
+                .map(linha -> new ResiduoMensalResponse(
+                        (String) linha[0],
+                        ((Number) linha[1]).longValue()
+                ))
+                .toList();
+    }
+
+    public List<AtividadeRecenteResponse> listarAtividadesRecentes() {
+
+        List<AtividadeRecenteResponse> atividades = new ArrayList<>();
+
+        // Buscar os 10 resíduos mais recentes
+        List<Residuo> residuos = residuoRepository
+                .findTop10ByDataCadastroIsNotNullOrderByDataCadastroDesc();
+
+        for (Residuo residuo : residuos) {
+            atividades.add(new AtividadeRecenteResponse(
+                    "RESIDUO_CADASTRADO",
+                    "Novo resíduo cadastrado: " + residuo.getNome(),
+                    residuo.getDataCadastro()
+            ));
+        }
+
+        // Buscar as 10 reservas mais recentes
+        List<Reserva> reservas = reservaRepository
+                .findTop10ByOrderByDataReservaDesc();
+
+        for (Reserva reserva : reservas) {
+            atividades.add(new AtividadeRecenteResponse(
+                    "RESERVA_REALIZADA",
+                    "Nova reserva realizada para o resíduo: "
+                            + reserva.getResiduo().getNome(),
+                    reserva.getDataReserva()
+            ));
+        }
+
+        // Ordenar todas as atividades da mais recente para a mais antiga
+        atividades.sort(
+                Comparator.comparing(
+                        AtividadeRecenteResponse::data,
+                        Comparator.nullsLast(Comparator.reverseOrder())
+                )
+        );
+
+        // Retornar somente as 10 atividades mais recentes
+        return atividades.stream()
+                .limit(10)
+                .toList();
     }
 }

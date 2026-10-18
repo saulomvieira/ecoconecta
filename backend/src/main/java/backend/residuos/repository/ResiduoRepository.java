@@ -22,16 +22,29 @@ public interface ResiduoRepository extends JpaRepository<Residuo, Long> {
 
     // Priorizar resíduos de uma região e exibir os demais depois
     @Query("""
-        SELECT r FROM Residuo r
-        ORDER BY
-            CASE
-                WHEN LOWER(r.regiao) = LOWER(:regiao) THEN 0
-                ELSE 1
-            END,
-            r.id DESC
-        """)
+            SELECT r FROM Residuo r
+            ORDER BY
+                CASE
+                    WHEN LOWER(r.regiao) = LOWER(:regiao) THEN 0
+                    ELSE 1
+                END,
+                r.id DESC
+            """)
     List<Residuo> findAllPriorizandoRegiao(
             @Param("regiao") String regiao
     );
+
+    @Query(value = """
+            SELECT
+                TO_CHAR(data_cadastro, 'YYYY-MM') AS mes,
+                COUNT(*) AS total
+            FROM residuos
+            WHERE data_cadastro IS NOT NULL
+            GROUP BY TO_CHAR(data_cadastro, 'YYYY-MM')
+            ORDER BY mes
+            """, nativeQuery = true)
+    List<Object[]> contarResiduosPorMes();
+
+    List<Residuo> findTop10ByDataCadastroIsNotNullOrderByDataCadastroDesc();
 
 }
