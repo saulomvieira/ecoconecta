@@ -18,20 +18,11 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     @Query("""
             SELECT u FROM Usuario u
-            WHERE (
-                :busca IS NULL
-                OR LOWER(u.nome) LIKE LOWER(CONCAT('%', :busca, '%'))
-                OR LOWER(u.email) LIKE LOWER(CONCAT('%', :busca, '%'))
-            )
-            AND (
-                :perfil IS NULL
-                OR UPPER(CAST(u.perfil AS String)) = UPPER(:perfil)
-            )
+            WHERE (:busca IS NULL OR LOWER(u.nome) LIKE LOWER(CONCAT('%', :busca, '%'))
+                   OR LOWER(u.email) LIKE LOWER(CONCAT('%', :busca, '%')))
+              AND (:perfil IS NULL OR u.perfil = :perfil)
             ORDER BY u.id DESC
             """)
-    List<Usuario> buscarUsuarios(
-            @Param("busca") String busca,
-            @Param("perfil") String perfil
-    );
-
+    List<Usuario> buscarUsuarios(@Param("busca") String busca,
+                                @Param("perfil") backend.usuarios.model.Perfil perfil);
 }

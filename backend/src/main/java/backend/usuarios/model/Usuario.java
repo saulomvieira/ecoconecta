@@ -35,6 +35,14 @@ public class Usuario {
 
     private String regiao;
 
+    @Transient
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private Boolean aceitouTermos;
+
+
+    @Column(name = "ativo", nullable = false)
+    private Boolean ativo = true;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "perfil", nullable = false)
     private Perfil perfil = Perfil.USUARIO;

@@ -56,7 +56,7 @@ public class DashboardController {
         return dashboardService.obterEstatisticas();
     }
 
-    @GetMapping("/residuos-mensais")
+    @GetMapping("/dashboard/residuos-mensais")
     public List<ResiduoMensalResponse> listarResiduosMensais(
             @AuthenticationPrincipal Jwt jwt) {
 
@@ -79,7 +79,7 @@ public class DashboardController {
         return dashboardService.listarResiduosPorMes();
     }
 
-    @GetMapping("/atividades-recentes")
+    @GetMapping("/dashboard/atividades-recentes")
     public List<AtividadeRecenteResponse> listarAtividadesRecentes(
             @AuthenticationPrincipal Jwt jwt) {
 

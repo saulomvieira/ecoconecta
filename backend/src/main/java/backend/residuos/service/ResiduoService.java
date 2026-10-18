@@ -353,4 +353,39 @@ public class ResiduoService {
         return new ResiduoDisponibilidadeResponse(residuo, status);
     }
 
+
+
+    // Consulta administrativa: nome, categoria e disponibilidade.
+    public List<backend.admin.dto.ResiduoAdminResponse> buscarResiduosAdmin(
+            String busca, String categoria, String status) {
+        exigirAdmin();
+        String termo = busca == null ? "" : busca.trim().toLowerCase(java.util.Locale.ROOT);
+        String filtroCategoria = categoria == null ? "" : categoria.trim();
+        String filtroStatus = status == null ? "" : status.trim().toUpperCase(java.util.Locale.ROOT);
+        if (!filtroStatus.isEmpty() && !List.of("DISPONIVEL", "RESERVADO", "COLETADO").contains(filtroStatus)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status inválido");
+        }
+        return listarFeed(null, false).stream()
+                .filter(item -> termo.isEmpty() ||
+                        item.residuo().getNome().toLowerCase(java.util.Locale.ROOT).contains(termo))
+                .filter(item -> filtroCategoria.isEmpty() ||
+                        item.residuo().getCategoria().equalsIgnoreCase(filtroCategoria))
+                .filter(item -> filtroStatus.isEmpty() || item.status().equals(filtroStatus))
+                .map(item -> backend.admin.dto.ResiduoAdminResponse.from(item.residuo(), item.status()))
+                .toList();
+    }
+
+    public backend.admin.dto.ResiduoAdminResponse detalharResiduoAdmin(Long id) {
+        exigirAdmin();
+        var disponibilidade = consultarDisponibilidade(id);
+        return backend.admin.dto.ResiduoAdminResponse.from(
+                disponibilidade.residuo(), disponibilidade.status());
+    }
+
+    private void exigirAdmin() {
+        if (!"ADMIN".equals(obterJwt().getClaimAsString("perfil"))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso permitido apenas para administradores");
+        }
+    }
+
 }

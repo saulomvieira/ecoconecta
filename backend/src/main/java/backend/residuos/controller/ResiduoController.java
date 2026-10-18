@@ -1,4 +1,3 @@
-
 package backend.residuos.controller;
 
 import backend.residuos.model.Residuo;

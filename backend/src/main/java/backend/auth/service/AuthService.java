@@ -26,7 +26,8 @@ public class AuthService {
             return Optional.empty();
         }
 
-        if (!passwordEncoder.matches(senha, usuario.get().getSenha())) {
+        if (!Boolean.TRUE.equals(usuario.get().getAtivo()) || senha == null
+                || !passwordEncoder.matches(senha, usuario.get().getSenha())) {
             return Optional.empty();
         }
 
