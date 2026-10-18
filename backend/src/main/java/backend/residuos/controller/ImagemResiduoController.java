@@ -48,7 +48,7 @@ public class ImagemResiduoController {
 
         var residuo = residuos.buscarPorId(id);
 
-        // Verifica se o usuário pode editar o resíduo
+        // Verifica se o usuário tem permissão
         if (jwt == null ||
                 (!"ADMIN".equals(jwt.getClaimAsString("perfil"))
                         && !jwt.getSubject().equals(
@@ -69,7 +69,7 @@ public class ImagemResiduoController {
             );
         }
 
-        // Lê a assinatura do arquivo
+        // Identifica o formato real da imagem
         byte[] assinatura;
 
         try (InputStream stream = arquivo.getInputStream()) {
@@ -116,20 +116,19 @@ public class ImagemResiduoController {
             );
         }
 
-        // Cria o diretório de uploads
+        // Cria a pasta de uploads
         Files.createDirectories(pasta);
 
-        // Gera um nome único para a imagem
+        // Gera um nome único
         String nome = UUID.randomUUID() + "." + extensao;
-
         Path destino = pasta.resolve(nome);
 
-        // Salva a imagem no servidor
+        // Salva a imagem
         try (InputStream stream = arquivo.getInputStream()) {
             Files.copy(stream, destino);
         }
 
-        // Atualiza a URL da imagem no resíduo
+        // Atualiza a URL da imagem
         residuo.setImagemUrl("/residuos/imagens/" + nome);
 
         try {
@@ -150,13 +149,9 @@ public class ImagemResiduoController {
             @PathVariable String nome
     ) {
 
-        // Valida o nome da imagem
-        if (!nome.matches(
-                "[0-9a-fA-F-]{36}\\.(jpg|png|webp)"
-        )) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND
-            );
+        // Valida o nome do arquivo
+        if (!nome.matches("[0-9a-fA-F-]{36}\\.(jpg|png|webp)")) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
         Path arquivo = pasta.resolve(nome).normalize();
@@ -165,12 +160,10 @@ public class ImagemResiduoController {
         if (!arquivo.startsWith(pasta)
                 || !Files.isRegularFile(arquivo)) {
 
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND
-            );
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
-        // Identifica o tipo de imagem
+        // Identifica o tipo da imagem
         String tipo = nome.endsWith(".png")
                 ? "image/png"
                 : nome.endsWith(".webp")
