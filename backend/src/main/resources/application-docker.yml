@@ -1,14 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://db:5432/ecoconecta
-    username: postgres
+    url: ${DB_URL:jdbc:postgresql://postgres-ecoconecta:5432/ecoconecta}
+    username: ${DB_USER:postgres}
     password: ${DB_PASSWORD}
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-
-server:
-  error:
-    include-stacktrace: never
+app:
+  upload:
+    dir: ${UPLOAD_DIR:/app/uploads/residuos}
