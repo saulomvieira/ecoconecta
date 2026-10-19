@@ -43,4 +43,10 @@ public class AssinaturaController {
     public Assinatura cancelar(@PathVariable Long id) {
         return service.cancelar(id);
     }
+
+    // Renovar assinatura por mais 30 dias — somente ADMIN
+    @PatchMapping("/{id}/renovar")
+    public Assinatura renovar(@PathVariable Long id) {
+        return service.renovar(id);
+    }
 }

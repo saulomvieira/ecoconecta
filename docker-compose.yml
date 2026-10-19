@@ -1,34 +1,53 @@
+
 services:
   app:
     build:
       context: .
       dockerfile: Dockerfile
+
     container_name: java-ecoconecta
+
+    working_dir: /workspace
+
     volumes:
       - ./backend:/workspace
       - ~/.m2:/root/.m2
-    working_dir: /workspace
+
     ports:
       - "8080:8080"
+
     environment:
       SPRING_PROFILES_ACTIVE: docker
       DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      SERVER_ERROR_INCLUDE_STACKTRACE: never
+
     depends_on:
       db:
         condition: service_healthy
+
     command: >
       sh -c "mvn clean install -DskipTests &&
              mvn spring-boot:run"
 
   db:
     image: postgres:17-alpine
+
     container_name: postgres-ecoconecta
+
+    restart: unless-stopped
+
     environment:
       POSTGRES_DB: ecoconecta
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+
+    ports:
+      - "127.0.0.1:5433:5432"
+
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d ecoconecta"]
       interval: 5s
