@@ -1,285 +1,235 @@
+
 # ♻️ EcoConecta
 
-O **EcoConecta** é uma aplicação que busca conectar pessoas que disponibilizam resíduos recicláveis ou compostáveis a coletores interessados, facilitando o reaproveitamento de materiais.
+O **EcoConecta** é um projeto acadêmico desenvolvido para conectar pessoas que disponibilizam resíduos recicláveis ou compostáveis a usuários interessados em coletá-los, incentivando o reaproveitamento de materiais e a sustentabilidade.
 
-O projeto está sendo desenvolvido em equipe como atividade acadêmica, seguindo as funcionalidades propostas no Figma.
+A aplicação foi desenvolvida em equipe, com base nos requisitos e protótipos definidos no Figma.
 
-## Tecnologias utilizadas
+## 🛠️ Tecnologias utilizadas
 
-**Backend**
+### Backend
 - Java 21
 - Spring Boot 4.1.1
 - Spring Data JPA / Hibernate
-- Maven
+- Spring Security e JWT
 - PostgreSQL 17
+- Maven
 - Bean Validation
-- BCrypt para criptografia de senhas
+- BCrypt
 
-**Frontend (futuramente)**
-- React
-
-**Ferramentas**
-- IntelliJ IDEA
+### Infraestrutura e ferramentas
+- Docker e Docker Compose
 - Git e GitHub
 - Postman
+- IntelliJ IDEA
 - Jira
 - pgAdmin
 
-## Arquitetura do projeto
+### Frontend
+- React (previsto para uma etapa futura)
 
-O EcoConecta utiliza uma arquitetura de **monólito modular**, organizada por funcionalidades e separada em camadas.
+## 🏗️ Arquitetura
 
-Cada módulo possui quatro componentes principais:
+O backend utiliza uma arquitetura de **monólito modular**, organizada por funcionalidades e separação de responsabilidades.
 
-- **Controller:** recebe e responde às requisições HTTP.
-- **Service:** implementa as regras de negócio.
-- **Repository:** realiza a comunicação com o banco de dados.
+Os módulos seguem, principalmente, a estrutura:
+
+- **Controller:** recebe requisições HTTP e retorna respostas.
+- **Service:** concentra as regras de negócio.
+- **Repository:** realiza o acesso aos dados.
 - **Model:** representa as entidades da aplicação.
 
-### Estrutura de diretórios
+A estrutura também inclui componentes de segurança, autenticação, tratamento de exceções e configurações compartilhadas.
 
-```text
-ecoconecta/
-├── backend/
-│   ├── src/
-│   │   └── main/
-│   │       ├── java/
-│   │       │   └── backend/
-│   │       │       ├── usuarios/
-│   │       │       │   ├── controller/
-│   │       │       │   │   └── UsuarioController.java
-│   │       │       │   ├── service/
-│   │       │       │   │   └── UsuarioService.java
-│   │       │       │   ├── repository/
-│   │       │       │   │   └── UsuarioRepository.java
-│   │       │       │   └── model/
-│   │       │       │       └── Usuario.java
-│   │       │       │
-│   │       │       ├── residuos/
-│   │       │       │   ├── controller/
-│   │       │       │   │   └── ResiduoController.java
-│   │       │       │   ├── service/
-│   │       │       │   │   └── ResiduoService.java
-│   │       │       │   ├── repository/
-│   │       │       │   │   └── ResiduoRepository.java
-│   │       │       │   └── model/
-│   │       │       │       └── Residuo.java
-│   │       │       │
-│   │       │       ├── reservas/
-│   │       │       │   ├── controller/
-│   │       │       │   │   └── ReservaController.java
-│   │       │       │   ├── service/
-│   │       │       │   │   └── ReservaService.java
-│   │       │       │   ├── repository/
-│   │       │       │   │   └── ReservaRepository.java
-│   │       │       │   └── model/
-│   │       │       │       └── Reserva.java
-│   │       │       │
-│   │       │       ├── planos/
-│   │       │       │   ├── controller/
-│   │       │       │   │   └── PlanoController.java
-│   │       │       │   ├── service/
-│   │       │       │   │   └── PlanoService.java
-│   │       │       │   ├── repository/
-│   │       │       │   │   └── PlanoRepository.java
-│   │       │       │   └── model/
-│   │       │       │       └── Plano.java
-│   │       │       │
-│   │       │       ├── termos/
-│   │       │       │   ├── controller/
-│   │       │       │   │   └── TermoUsoController.java
-│   │       │       │   ├── service/
-│   │       │       │   │   └── TermoUsoService.java
-│   │       │       │   ├── repository/
-│   │       │       │   │   └── TermoUsoRepository.java
-│   │       │       │   └── model/
-│   │       │       │       └── TermoUso.java
-│   │       │       │
-│   │       │       ├── exception/
-│   │       │       │   └── GlobalExceptionHandler.java
-│   │       │       └── BackendApplication.java
-│   │       │
-│   │       └── resources/
-│   │           └── application.yaml
-│   ├── mvnw
-│   ├── mvnw.cmd
-│   └── pom.xml
-│
-├── README.md
-└── CONTRIBUTING.md
-```
+## ✅ Funcionalidades implementadas
 
-**Importante:** as classes dos módulos de resíduos, reservas, planos **já foram criadas**, mas estão inicialmente sem a implementação dos CRUDs.
+| Módulo | Funcionalidades |
+|---|---|
+| Usuários | Cadastro, consulta, atualização, exclusão e validações |
+| Autenticação | Login, autenticação JWT e proteção de endpoints |
+| Recuperação de senha | Solicitação e redefinição de senha |
+| Resíduos | Cadastro, listagem, consulta, atualização e exclusão |
+| Imagens de resíduos | Envio e consulta de imagens, com validações |
+| Reservas | Criação, consulta, cancelamento e registro de coleta |
+| Planos | Gerenciamento dos planos disponíveis |
+| Assinaturas | Contratação e gerenciamento de assinaturas |
+| Termos de uso | Gerenciamento de versões e registro de aceites |
+| Administração | Operações administrativas e consultas de informações |
 
-Cada integrante deverá desenvolver as funcionalidades dentro das classes existentes, respeitando a organização dos pacotes.
+As operações possuem validações e regras de autorização de acordo com o usuário autenticado.
 
-## Configuração do ambiente
+## 🔐 Segurança
 
-### 1. Clonar o repositório
+A aplicação utiliza **Spring Security** e autenticação baseada em **JSON Web Token (JWT)**.
+
+Entre os mecanismos implementados estão:
+
+- Armazenamento de senhas utilizando BCrypt.
+- Autenticação por token JWT.
+- Controle de acesso por perfil de usuário.
+- Proteção de endpoints administrativos.
+- Verificação de permissões sobre recursos pertencentes aos usuários.
+- Validação dos dados recebidos.
+- Tratamento de exceções e respostas HTTP apropriadas.
+
+## 🐳 Executando com Docker
+
+### 1. Pré-requisitos
+
+- Git
+- Docker Desktop com Docker Compose
+
+### 2. Clonar o repositório
 
 ```bash
 git clone https://github.com/saulomvieira/ecoconecta.git
+cd ecoconecta
 ```
 
-Depois, abra a pasta `backend` no IntelliJ IDEA como projeto Maven.
+### 3. Configurar variáveis de ambiente
 
-### 2. Configurar o PostgreSQL
+Crie um arquivo `.env` na raiz do projeto, contendo pelo menos:
 
-Cada integrante utilizará seu **próprio banco de dados local**, evitando conflitos durante o desenvolvimento.
-
-Requisitos:
-- PostgreSQL instalado e em execução.
-- Banco de dados chamado `ecoconecta`.
-- Usuário PostgreSQL configurado localmente.
-
-Para criar o banco, utilize o pgAdmin ou execute:
-
-```sql
-CREATE DATABASE ecoconecta;
+```env
+DB_PASSWORD=defina_uma_senha_local
+JWT_SECRET=defina_uma_chave_secreta_forte
 ```
 
-Não é necessário criar manualmente as tabelas já mapeadas como entidades JPA. Durante o desenvolvimento, o Hibernate utiliza `ddl-auto: update` para criar ou atualizar as tabelas.
+Utilize uma chave JWT forte e adequada à configuração da aplicação.
 
-### 3. Configurar a conexão
+O arquivo `.env` não deve ser enviado ao GitHub.
 
-O arquivo `backend/src/main/resources/application.yaml` utiliza a seguinte configuração:
+Funcionalidades que utilizam envio de e-mails podem exigir configuração adicional de SMTP.
 
-```yaml
-spring:
-  application:
-    name: backend
-  datasource:
-    url: jdbc:postgresql://localhost:5432/ecoconecta
-    username: postgres
-    password: ${DB_PASSWORD}
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
+### 4. Iniciar a aplicação
+
+Na raiz do repositório, execute:
+
+```bash
+docker compose up -d --build
 ```
 
-Cada integrante deve configurar a variável de ambiente `DB_PASSWORD` com a senha do seu próprio PostgreSQL.
+O Docker Compose inicia o backend e o PostgreSQL.
 
-No IntelliJ IDEA:
+### 5. Verificar os containers
 
-1. Acesse **Run → Edit Configurations**.
-2. Selecione a configuração de execução do backend.
-3. Em **Environment variables**, adicione `DB_PASSWORD` com sua senha local.
-4. Salve as alterações.
+```bash
+docker compose ps
+```
 
-**Nunca envie senhas ou credenciais para o GitHub.**
+Para acompanhar a inicialização:
 
-### 4. Executar o backend
+```bash
+docker compose logs -f app
+```
 
-Execute a classe:
+A API estará disponível em:
 
-`BackendApplication.java`
+```text
+http://localhost:8080
+```
 
-Ou, com a variável `DB_PASSWORD` configurada no terminal, execute na pasta `backend`:
+O PostgreSQL estará acessível localmente pela porta `5433`, conforme a configuração do Docker Compose.
 
-**Windows:**
+### 6. Encerrar os containers
+
+```bash
+docker compose down
+```
+
+Esse comando encerra os serviços sem excluir automaticamente o volume de dados do PostgreSQL.
+
+## 💻 Executando localmente com Maven
+
+Também é possível executar o backend sem utilizar o container da aplicação.
+
+Entre na pasta:
+
+```bash
+cd backend
+```
+
+Configure as variáveis de ambiente necessárias, especialmente `DB_PASSWORD` e `JWT_SECRET`, e mantenha uma instância do PostgreSQL acessível.
+
+No Windows:
 
 ```powershell
 .\mvnw.cmd spring-boot:run
 ```
 
-A API estará disponível em:
+A aplicação utiliza arquivos de configuração do Spring Boot e permite configurar a conexão com o banco por variáveis de ambiente.
 
-`http://localhost:8080`
+## 🌐 API REST
 
-## Situação do desenvolvimento
+O backend disponibiliza endpoints para as funcionalidades do EcoConecta.
 
-| Módulo | Situação |
-|---|---|
-| Usuários | CRUD implementado e testado |
-| Resíduos | Classes criadas — CRUD pendente |
-| Reservas | Classes criadas — CRUD pendente |
-| Planos de assinatura | Classes criadas — CRUD pendente |
-| Assinaturas | Implementado (módulo `planos`) |
-| Termos de uso | Implementado (módulo `termos`) |
+Alguns exemplos de rotas:
 
-### CRUD de usuários
-
-O módulo de usuários já possui:
-
-- Cadastro de usuários.
-- Listagem de usuários.
-- Consulta por ID.
-- Atualização de usuários.
-- Exclusão de usuários.
-- Validação dos campos obrigatórios.
-- Verificação de e-mails duplicados.
-- Tratamento de erros HTTP 400, 404 e 409.
-- Armazenamento de senhas com BCrypt.
-
-**Endpoints disponíveis:**
-
-| Método | Endpoint | Operação |
+| Método | Endpoint | Descrição |
 |---|---|---|
 | POST | `/usuarios` | Cadastrar usuário |
-| GET | `/usuarios` | Listar usuários |
+| GET | `/usuarios` | Listar usuários, conforme permissão |
 | GET | `/usuarios/{id}` | Consultar usuário |
 | PUT | `/usuarios/{id}` | Atualizar usuário |
-| DELETE | `/usuarios/{id}` | Excluir usuário |
+| DELETE | `/usuarios/{id}` | Excluir usuário, conforme permissão |
 
-## Divisão de responsabilidades
+Além dessas rotas, a aplicação possui endpoints para autenticação, resíduos, imagens, reservas, planos, assinaturas, termos de uso e administração.
 
-O desenvolvimento está dividido entre cinco integrantes:
+**Observação:** parte dos endpoints exige autenticação por JWT e permissões específicas.
 
-| Módulo | Responsabilidade |
-|---|---|
-| Usuários | CRUD concluído |
-| Resíduos | Implementação do CRUD de resíduos |
-| Reservas | Implementação do CRUD de reservas e coletas |
-| Planos | Implementação do CRUD de planos |
-| Assinaturas e termos | Assinaturas (em `planos`) e termos de uso versionados (`termos`) |
+## 🗄️ Banco de dados
 
-As atividades estão organizadas no **Jira**, na Sprint 1 do projeto EcoConecta.
+O projeto utiliza **PostgreSQL 17** para persistência dos dados.
 
-## Fluxo de trabalho com Git e GitHub
+O acesso ao banco é realizado por meio do Spring Data JPA e Hibernate.
 
-Cada integrante deverá trabalhar em sua própria branch, criada a partir da `main` atualizada.
+Durante o desenvolvimento, a configuração `ddl-auto: update` permite que o Hibernate atualize o esquema das entidades mapeadas.
 
-**Branches sugeridas:**
+O Docker Compose utiliza um volume para persistir os dados do PostgreSQL entre reinicializações dos containers.
+
+## 🖼️ Upload de imagens
+
+O EcoConecta permite associar imagens aos resíduos cadastrados.
+
+O backend realiza validações relacionadas ao tipo de arquivo, tamanho permitido e permissões do usuário.
+
+No ambiente Docker, os arquivos podem ser armazenados no diretório:
 
 ```text
-feat/residuos
-feat/reservas
-feat/planos
-feat/assinaturas-termos
+backend/uploads/residuos/
 ```
 
-### Procedimento
+Esse diretório é ignorado pelo Git para evitar o versionamento dos arquivos enviados durante a utilização da aplicação.
 
-1. Atualizar a branch `main` antes de começar.
-2. Criar a branch correspondente ao módulo.
-3. Implementar as funcionalidades nas classes já existentes.
-4. Testar os endpoints no Postman.
-5. Realizar commit e push.
-6. Abrir um Pull Request para a `main`.
-7. Aguardar a revisão e integração das alterações.
+## 🧪 Testes
 
-**Não desenvolver diretamente na branch `main`.**
+Durante o desenvolvimento, os endpoints foram testados utilizando o **Postman**, contemplando operações de cadastro, consulta, atualização e exclusão, além de cenários de validação, autenticação, autorização e upload de imagens.
 
-Como cada integrante possui um PostgreSQL local, os dados cadastrados em um computador não aparecem automaticamente nos bancos dos outros integrantes.
+A aplicação também foi compilada e inicializada utilizando Docker Compose, com conexão ao PostgreSQL.
 
-## Regras de desenvolvimento
+## 👥 Organização do desenvolvimento
 
-- Manter a organização por funcionalidades.
-- Utilizar Controller, Service, Repository e Model.
-- Aplicar validações aos dados recebidos.
-- Retornar códigos HTTP adequados.
-- Evitar duplicação de regras de negócio.
-- Respeitar os relacionamentos entre entidades.
-- Não alterar o módulo de outro integrante sem combinar previamente.
-- Não publicar senhas ou arquivos sensíveis.
-- Testar as funcionalidades antes de abrir um Pull Request.
+O projeto foi desenvolvido em equipe, com divisão de responsabilidades entre os integrantes.
 
-## Escopo atual
+O versionamento foi realizado utilizando Git e GitHub, com branches para desenvolvimento das funcionalidades e integração do código.
 
-Nesta etapa, o objetivo é implementar os **CRUDs completos da aplicação**, conforme solicitado pelo professor e com base no Figma.
+Fluxo adotado:
 
-A implementação do frontend, autenticação e demais funcionalidades avançadas será realizada posteriormente.
+```text
+Branches de funcionalidades
+          ↓
+       develop
+          ↓
+         main
+```
+
+A branch `develop` foi utilizada para integração e a `main` para a versão consolidada do projeto.
+
+## 🎓 Escopo acadêmico
+
+O EcoConecta foi desenvolvido como atividade acadêmica, com foco na implementação do backend, persistência de dados, regras de negócio, autenticação e integração entre os módulos.
+
+A interface frontend completa não faz parte desta entrega.
 
 ---
 
