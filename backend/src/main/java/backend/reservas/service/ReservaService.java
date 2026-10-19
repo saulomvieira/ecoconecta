@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ReservaService {
@@ -47,6 +48,7 @@ public class ReservaService {
     }
 
     // Cadastrar reserva
+    @Transactional
     public Reserva cadastrar(Long usuarioId, Long residuoId) {
 
         if (!ehAdmin() && !usuarioAutenticadoId().equals(usuarioId)) {
@@ -62,7 +64,7 @@ public class ReservaService {
                         "Usuário não encontrado"
                 ));
 
-        Residuo residuo = residuoRepository.findById(residuoId)
+        Residuo residuo = residuoRepository.buscarPorIdComBloqueio(residuoId)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Resíduo não encontrado"
