@@ -1,5 +1,6 @@
 
 import { api } from './client'
+import type { Residuo } from './residuos'
 
 export type StatusReserva = 'RESERVADA' | 'COLETADA' | 'CANCELADA'
 
@@ -7,6 +8,7 @@ export interface Reserva {
   id: number
   status: StatusReserva
   dataReserva: string
+  residuo: Residuo
 }
 
 interface NovaReservaRequest {
@@ -24,5 +26,15 @@ export async function solicitarReserva(
       usuarioId,
       residuoId,
     } satisfies NovaReservaRequest),
+  })
+}
+
+export async function listarMinhasReservas(): Promise<Reserva[]> {
+  return api<Reserva[]>('/reservas/minhas')
+}
+
+export async function cancelarReserva(id: number): Promise<void> {
+  return api<void>(`/reservas/${id}`, {
+    method: 'DELETE',
   })
 }

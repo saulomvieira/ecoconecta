@@ -12,7 +12,9 @@ export function Login() {
   const [enviando, setEnviando] = useState(false)
 
   if (sessao) {
-    const destino = (location.state as { from?: string } | null)?.from ?? '/admin/termos'
+    const destino =
+      (location.state as { from?: string } | null)?.from ??
+      (sessao.perfil === 'ADMIN' ? '/admin/termos' : '/feed')
     return <Navigate to={destino} replace />
   }
 
