@@ -1,0 +1,126 @@
+.minhas-reservas-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 24px;
+}
+
+.minhas-reservas-voltar {
+    color: #15803d;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.minhas-reservas-container h1 {
+    margin: 28px 0 8px;
+    color: #1e293b;
+}
+
+.minhas-reservas-subtitulo {
+    color: #64748b;
+    margin-bottom: 32px;
+}
+
+.minhas-reservas-lista {
+    display: grid;
+    gap: 20px;
+}
+
+.minhas-reservas-card {
+    padding: 24px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.minhas-reservas-card-topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+.minhas-reservas-card h2 {
+    color: #1e293b;
+    margin: 0 0 12px;
+}
+
+.minhas-reservas-card p {
+    color: #475569;
+    margin: 8px 0;
+}
+
+.minhas-reservas-status {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.status-reservada {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-coletada {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.status-cancelada {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.minhas-reservas-acoes {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.minhas-reservas-acoes a {
+    color: #15803d;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.minhas-reservas-cancelar {
+    padding: 10px 16px;
+    background: #fff;
+    border: 1px solid #dc2626;
+    border-radius: 8px;
+    color: #dc2626;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.minhas-reservas-cancelar:hover:not(:disabled) {
+    background: #fef2f2;
+}
+
+.minhas-reservas-cancelar:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.minhas-reservas-erro {
+    color: #b91c1c;
+    margin-bottom: 20px;
+}
+
+.minhas-reservas-vazio {
+    padding: 40px;
+    text-align: center;
+    background: #f8fafc;
+    border-radius: 12px;
+}
+
+@media (max-width: 600px) {
+
+    .minhas-reservas-card-topo,
+    .minhas-reservas-acoes {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

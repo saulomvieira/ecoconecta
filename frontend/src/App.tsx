@@ -7,6 +7,7 @@ import { Login } from './pages/Login'
 import { TermosUsoPage } from './pages/TermosUso'
 import { FeedResiduos } from './pages/FeedResiduos'
 import { DetalhesResiduo } from './pages/DetalhesResiduo'
+import { MinhasReservas } from './pages/MinhasReservas'
 
 function RequireAdmin({ children }: { children: React.ReactNode }) {
   const { sessao } = useAuth()
@@ -28,6 +29,7 @@ export default function App() {
           {/* Área dos usuários */}
           <Route path="/feed" element={<FeedResiduos />} />
           <Route path="/residuos/:id" element={<DetalhesResiduo />} />
+          <Route path="/minhas-reservas" element={<MinhasReservas />} />
 
           {/* Área administrativa */}
           <Route
