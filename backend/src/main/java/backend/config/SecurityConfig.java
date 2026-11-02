@@ -31,6 +31,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/esqueci-senha", "/auth/redefinir-senha").permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
 
+                        // Termos atuais: exibidos na tela de cadastro, antes do login
+                        .requestMatchers(HttpMethod.GET, "/termos/atual").permitAll()
+
                         // Feed público de resíduos
                         .requestMatchers(HttpMethod.GET, "/residuos/feed").permitAll()
 

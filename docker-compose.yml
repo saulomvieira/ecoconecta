@@ -21,6 +21,8 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
       SERVER_ERROR_INCLUDE_STACKTRACE: never
+      # Base do link enviado no e-mail de recuperação de senha
+      FRONTEND_URL: http://localhost:5173
 
     depends_on:
       db:
