@@ -6,6 +6,7 @@ import { EmBreve } from './pages/EmBreve'
 import { Login } from './pages/Login'
 import { TermosUsoPage } from './pages/TermosUso'
 import { FeedResiduos } from './pages/FeedResiduos'
+import { DetalhesResiduo } from './pages/DetalhesResiduo'
 
 function RequireAdmin({ children }: { children: React.ReactNode }) {
   const { sessao } = useAuth()
@@ -26,6 +27,7 @@ export default function App() {
 
           {/* Área dos usuários */}
           <Route path="/feed" element={<FeedResiduos />} />
+          <Route path="/residuos/:id" element={<DetalhesResiduo />} />
 
           {/* Área administrativa */}
           <Route

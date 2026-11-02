@@ -1,4 +1,5 @@
 
+import { Link } from 'react-router-dom'
 import type { ResiduoDisponibilidade } from '../api/residuos'
 
 interface Props {
@@ -42,9 +43,18 @@ export function ResiduoCard({ item }: Props) {
           <strong>Região:</strong> {residuo.regiao}
         </p>
 
-        <span className="residuo-status">
-          {status}
-        </span>
+        <div className="residuo-card-rodape">
+          <span className="residuo-status">
+            {status}
+          </span>
+
+          <Link
+            to={`/residuos/${residuo.id}`}
+            className="residuo-detalhes-link"
+          >
+            Ver detalhes
+          </Link>
+        </div>
       </div>
     </article>
   )

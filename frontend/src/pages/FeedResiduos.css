@@ -127,3 +127,31 @@
     flex: auto;
   }
 }
+
+
+.residuo-card-rodape {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.residuo-card-rodape .residuo-status {
+  margin-top: 0;
+}
+
+.residuo-detalhes-link {
+  padding: 9px 14px;
+  background: #15803d;
+  color: #ffffff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.residuo-detalhes-link:hover {
+  background: #166534;
+}
