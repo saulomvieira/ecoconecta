@@ -10,6 +10,7 @@ import {
 import { api, tokenStorage, UNAUTHORIZED_EVENT } from '../api/client'
 
 interface Sessao {
+  id: number
   perfil: 'ADMIN' | 'USUARIO'
 }
 
@@ -24,11 +25,34 @@ const AuthContext = createContext<AuthContextValue | null>(null)
 // Lê as claims do JWT só para a UI; quem valida de verdade é o backend.
 function lerSessao(token: string | null): Sessao | null {
   if (!token) return null
+
   try {
-    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')))
-    if (payload.exp * 1000 < Date.now()) return null
-    if (payload.perfil !== 'ADMIN' && payload.perfil !== 'USUARIO') return null
-    return { perfil: payload.perfil }
+    const payload = JSON.parse(
+      atob(
+        token.split('.')[1]
+          .replace(/-/g, '+')
+          .replace(/_/g, '/')
+      )
+    )
+
+    if (typeof payload.exp !== 'number' || payload.exp * 1000 < Date.now()) {
+      return null
+    }
+
+    if (payload.perfil !== 'ADMIN' && payload.perfil !== 'USUARIO') {
+      return null
+    }
+
+    const id = Number(payload.sub)
+
+    if (!Number.isSafeInteger(id) || id <= 0) {
+      return null
+    }
+
+    return {
+      id,
+      perfil: payload.perfil,
+    }
   } catch {
     return null
   }
