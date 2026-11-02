@@ -8,11 +8,17 @@ interface Props {
 export function ResiduoCard({ item }: Props) {
   const { residuo, status } = item
 
+  const imagemUrl = residuo.imagemUrl
+    ? residuo.imagemUrl.startsWith('/residuos/')
+      ? `/api${residuo.imagemUrl}`
+      : residuo.imagemUrl
+    : null
+
   return (
     <article className="residuo-card">
-      {residuo.imagemUrl && (
+      {imagemUrl && (
         <img
-          src={residuo.imagemUrl}
+          src={imagemUrl}
           alt={residuo.nome}
           className="residuo-imagem"
         />
