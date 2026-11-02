@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
-import { CreditCard, FileText, LayoutDashboard, LogOut, Sprout, Trash2, Users } from 'lucide-react'
+import { CreditCard, FileText, LayoutDashboard, LogOut, Trash2, Users } from 'lucide-react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { iniciais, nomeAbreviado, perfilApi, type MeuPerfil } from '../api/perfil'
 import { useAuth } from '../auth/AuthContext'
+import { LogoIcone } from './LogoIcone'
 
 const itens = [
   { to: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -25,7 +26,7 @@ export function AdminLayout() {
       <aside className="sidebar">
         <div>
           <div className="brand">
-            <Sprout strokeWidth={1.75} />
+            <LogoIcone />
             EcoConecta
           </div>
           <span className="badge-admin">ADMIN</span>
