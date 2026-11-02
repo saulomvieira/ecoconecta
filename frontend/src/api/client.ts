@@ -1,9 +1,16 @@
 const TOKEN_KEY = 'ecoconecta.token'
 
+// "Lembrar de mim" guarda o token em localStorage; sem ele, só vale até fechar a aba.
 export const tokenStorage = {
-  get: () => localStorage.getItem(TOKEN_KEY),
-  set: (token: string) => localStorage.setItem(TOKEN_KEY, token),
-  clear: () => localStorage.removeItem(TOKEN_KEY),
+  get: () => localStorage.getItem(TOKEN_KEY) ?? sessionStorage.getItem(TOKEN_KEY),
+  set: (token: string, lembrar = true) => {
+    tokenStorage.clear()
+    ;(lembrar ? localStorage : sessionStorage).setItem(TOKEN_KEY, token)
+  },
+  clear: () => {
+    localStorage.removeItem(TOKEN_KEY)
+    sessionStorage.removeItem(TOKEN_KEY)
+  },
 }
 
 export class ApiError extends Error {

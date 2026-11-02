@@ -2,9 +2,13 @@
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { AuthProvider, useAuth } from './auth/AuthContext'
 import { AdminLayout } from './components/AdminLayout'
+import { UserNavbar } from './components/UserNavbar'
 import { DashboardPage } from './pages/Dashboard'
+import { Cadastro } from './pages/Cadastro'
+import { EsqueciSenha } from './pages/EsqueciSenha'
 import { Login } from './pages/Login'
 import { PlanosPage } from './pages/Planos'
+import { RedefinirSenha } from './pages/RedefinirSenha'
 import { ResiduosPage } from './pages/Residuos'
 import { TermosUsoPage } from './pages/TermosUso'
 import { UsuariosPage } from './pages/Usuarios'
@@ -33,11 +37,16 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/cadastro" element={<Cadastro />} />
+          <Route path="/esqueci-senha" element={<EsqueciSenha />} />
+          <Route path="/redefinir-senha" element={<RedefinirSenha />} />
 
           {/* Área dos usuários */}
-          <Route path="/feed" element={<FeedResiduos />} />
-          <Route path="/residuos/:id" element={<DetalhesResiduo />} />
-          <Route path="/minhas-reservas" element={<MinhasReservas />} />
+          <Route element={<UserNavbar />}>
+            <Route path="/feed" element={<FeedResiduos />} />
+            <Route path="/residuos/:id" element={<DetalhesResiduo />} />
+            <Route path="/minhas-reservas" element={<MinhasReservas />} />
+          </Route>
 
           {/* Área administrativa */}
           <Route
