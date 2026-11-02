@@ -29,7 +29,6 @@ public class TermoUsoService {
         this.usuarioRepository = usuarioRepository;
     }
 
-    // Cada salvamento cria uma nova versão; as anteriores ficam no histórico
     @Transactional
     public TermoUso publicar(TermoUso termo) {
         Authentication authentication =
