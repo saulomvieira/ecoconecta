@@ -1,4 +1,3 @@
-
 package backend.config;
 
 import org.springframework.context.annotation.Bean;
@@ -11,6 +10,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.web.SecurityFilterChain;
 
 import java.util.List;
+
 import backend.usuarios.repository.UsuarioRepository;
 
 @Configuration
@@ -27,35 +27,38 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
 
-                        // Rotas públicas
-                        .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/esqueci-senha", "/auth/redefinir-senha").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
+                                // Rotas públicas
+                                .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/esqueci-senha", "/auth/redefinir-senha").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
 
-                        // Todos os endpoints administrativos exigem perfil ADMIN
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                                // Feed público de resíduos
+                                .requestMatchers(HttpMethod.GET, "/residuos/feed").permitAll()
 
-                        // Listagens administrativas
-                        .requestMatchers(HttpMethod.GET, "/usuarios").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/reservas").hasRole("ADMIN")
+                                // Todos os endpoints administrativos exigem perfil ADMIN
+                                .requestMatchers("/admin/**").hasRole("ADMIN")
 
-                        // Exclusão de usuários
-                        .requestMatchers(HttpMethod.DELETE, "/usuarios/*").hasRole("ADMIN")
+                                // Listagens administrativas
+                                .requestMatchers(HttpMethod.GET, "/usuarios").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/reservas").hasRole("ADMIN")
 
-                        // Consulta de planos: usuários autenticados
-                        .requestMatchers(HttpMethod.GET, "/planos", "/planos/*")
-                        .hasAnyRole("USUARIO", "ADMIN")
+                                // Exclusão de usuários
+                                .requestMatchers(HttpMethod.DELETE, "/usuarios/*").hasRole("ADMIN")
 
-                        // Alterações de planos: apenas administradores
-                        .requestMatchers(HttpMethod.POST, "/planos").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/planos/*").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/planos/*").hasRole("ADMIN")
+                                // Consulta de planos: usuários autenticados
+                                .requestMatchers(HttpMethod.GET, "/planos", "/planos/*")
+                                .hasAnyRole("USUARIO", "ADMIN")
+
+                                // Alterações de planos: apenas administradores
+                                .requestMatchers(HttpMethod.POST, "/planos").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.PUT, "/planos/*").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.DELETE, "/planos/*").hasRole("ADMIN")
 
 
-                        // Publicação de termos: apenas administradores
-                        .requestMatchers(HttpMethod.POST, "/termos").hasRole("ADMIN")
+                                // Publicação de termos: apenas administradores
+                                .requestMatchers(HttpMethod.POST, "/termos").hasRole("ADMIN")
 
-                        // Demais operações exigem autenticação
-                        .anyRequest().hasAnyRole("USUARIO", "ADMIN")
+                                // Demais operações exigem autenticação
+                                .anyRequest().hasAnyRole("USUARIO", "ADMIN")
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt ->
                         jwt.jwtAuthenticationConverter(converter)

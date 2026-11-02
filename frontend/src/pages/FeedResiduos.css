@@ -1,0 +1,70 @@
+
+.feed-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+.feed-header {
+  margin-bottom: 32px;
+}
+
+.feed-header h1 {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.feed-header p {
+  color: #64748b;
+}
+
+.feed-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.residuo-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.residuo-imagem {
+  width: 100%;
+  height: 190px;
+  object-fit: cover;
+}
+
+.residuo-conteudo {
+  padding: 20px;
+}
+
+.residuo-conteudo h3 {
+  margin: 12px 0;
+  color: #1e293b;
+}
+
+.residuo-conteudo p {
+  color: #475569;
+  line-height: 1.5;
+}
+
+.residuo-categoria {
+  color: #15803d;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.residuo-status {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 6px 12px;
+  background: #dcfce7;
+  color: #166534;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
