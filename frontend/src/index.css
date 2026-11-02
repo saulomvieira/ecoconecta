@@ -81,7 +81,6 @@ h2 { font-size: 18px; }
 .history-item { width: 100%; text-align: left; font: inherit; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; background: #fff; cursor: pointer; }
 .history-item:hover { background: var(--bg); }
 
-/* Telas admin (dashboard, listas, planos) */
 .page-header { justify-content: space-between; gap: 16px; }
 .page-header-actions, .filters { display: flex; gap: 12px; align-items: center; }
 .filters { margin-bottom: 20px; }
@@ -167,7 +166,6 @@ textarea.input { height: auto; padding: 10px 12px; resize: vertical; }
 .detail dt { color: #6b706d; }
 .detail dd { margin: 0; color: var(--text-h); }
 
-/* Autenticação: login, cadastro e recuperação de senha */
 .auth-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 32px 16px; }
 .auth-split { width: min(1040px, 100%); min-height: 640px; display: grid; grid-template-columns: 1fr 1fr; border-radius: 32px; overflow: hidden; background: #fff; box-shadow: 0 24px 60px rgba(20, 40, 31, 0.12); }
 .auth-hero { position: relative; overflow: hidden; background: var(--green-900); color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 48px 56px; }
@@ -229,7 +227,6 @@ textarea.input { height: auto; padding: 10px 12px; resize: vertical; }
   .two-cols { grid-template-columns: minmax(0, 1fr); }
 }
 
-/* Navbar global do usuário comum */
 .user-layout { min-height: 100vh; background: var(--bg); }
 .navbar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 32px; height: 64px; padding: 0 32px; background: #fff; border-bottom: 1px solid var(--border); }
 .navbar .brand { color: var(--green-900); text-decoration: none; padding: 0; font-size: 20px; }
@@ -255,5 +252,4 @@ textarea.input { height: auto; padding: 10px 12px; resize: vertical; }
   .navbar-links { gap: 16px; }
 }
 
-/* .btn usado em <a>: centraliza e remove o sublinhado */
 a.btn { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; white-space: nowrap; }

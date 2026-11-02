@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { mensagemErro } from '../api/admin'
 
-// Carrega dados ao montar e expõe `recarregar` para depois de mutações.
 export function useCarregar<T>(buscar: () => Promise<T>) {
   const [dados, setDados] = useState<T | null>(null)
   const [erro, setErro] = useState<string | null>(null)

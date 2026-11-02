@@ -25,7 +25,7 @@ export function Cadastro() {
   const divergente = confirmacao !== '' && confirmacao !== senha
 
   useEffect(() => {
-    // 404 = ainda não há termo publicado: o backend não exige aceite nesse caso.
+
     termosApi.atual().then(setTermo).catch(() => setTermo(null))
   }, [])
 
@@ -51,9 +51,9 @@ export function Cadastro() {
       return
     }
     try {
-      await entrar(email.trim(), senha) // a navegação ao feed acontece pelo redirecionamento acima
+      await entrar(email.trim(), senha)
     } catch {
-      navigate('/login', { replace: true }) // conta criada, mas o login automático falhou
+      navigate('/login', { replace: true })
     }
   }
 
@@ -103,7 +103,6 @@ export function Cadastro() {
 
       {lendoTermo && termo && (
         <Modal largo titulo={`Termos de Uso · v${termo.versao}`} onClose={() => setLendoTermo(false)}>
-          {/* Conteúdo HTML publicado por um administrador no editor de termos. */}
           <div className="terms-content" dangerouslySetInnerHTML={{ __html: termo.conteudo }} />
           <div className="actions end">
             <button type="button" className="btn" onClick={() => setLendoTermo(false)}>Fechar</button>

@@ -19,8 +19,6 @@ export const authApi = {
 
 export const SENHA_MIN = 8
 
-// Bairros de Fortaleza oferecidos no cadastro; o valor gravado é só o bairro,
-// que é o mesmo formato usado nas regiões dos resíduos.
 export const REGIOES = [
   'Aldeota', 'Benfica', 'Centro', 'Cocó', 'Dionísio Torres', 'Edson Queiroz', 'Fátima',
   'Joaquim Távora', 'Meireles', 'Messejana', 'Montese', 'Papicu', 'Parangaba', 'Praia de Iracema',

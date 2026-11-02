@@ -1,6 +1,5 @@
 const TOKEN_KEY = 'ecoconecta.token'
 
-// "Lembrar de mim" guarda o token em localStorage; sem ele, só vale até fechar a aba.
 export const tokenStorage = {
   get: () => localStorage.getItem(TOKEN_KEY) ?? sessionStorage.getItem(TOKEN_KEY),
   set: (token: string, lembrar = true) => {

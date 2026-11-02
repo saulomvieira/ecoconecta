@@ -190,7 +190,6 @@ public class UsuarioService {
     // Pesquisa administrativa com filtros opcionais.
     public List<Usuario> buscarUsuariosAdmin(String busca, String perfil) {
         exigirAdmin();
-        // String vazia (e não null): o Postgres não infere o tipo de um parâmetro null em LOWER().
         String termo = busca == null ? "" : busca.trim();
         Perfil filtro = null;
         if (perfil != null && !perfil.isBlank()) {

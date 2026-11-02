@@ -5,7 +5,6 @@ import { iniciais, nomeAbreviado, perfilApi, type MeuPerfil } from '../api/perfi
 import { useAuth } from '../auth/AuthContext'
 import { LogoIcone } from './LogoIcone'
 
-// Acrescente aqui as próximas telas do usuário (Meus resíduos, Planos, Perfil…).
 const links = [
   { to: '/feed', label: 'Feed' },
   { to: '/minhas-reservas', label: 'Minhas Reservas' },
@@ -48,7 +47,6 @@ function MenuUsuario({ perfil, admin }: { perfil: MeuPerfil | null; admin: boole
   )
 }
 
-// Layout das telas do usuário comum. O feed é público, então sem sessão mostra Entrar/Criar conta.
 export function UserNavbar() {
   const { sessao } = useAuth()
   const [perfil, setPerfil] = useState<MeuPerfil | null>(null)

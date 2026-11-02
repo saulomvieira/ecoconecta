@@ -1,6 +1,5 @@
 import { LogoIcone } from './LogoIcone'
 
-// Cartão central usado por cadastro e recuperação de senha.
 export function AuthCard({ titulo, subtitulo, children }: { titulo: string; subtitulo?: string; children: React.ReactNode }) {
   return (
     <div className="auth-page">
