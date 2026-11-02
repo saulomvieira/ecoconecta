@@ -1,4 +1,3 @@
-
 package backend.config;
 
 import org.springframework.context.annotation.Bean;
@@ -11,6 +10,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.web.SecurityFilterChain;
 
 import java.util.List;
+
 import backend.usuarios.repository.UsuarioRepository;
 
 @Configuration
@@ -30,6 +30,12 @@ public class SecurityConfig {
                         // Rotas públicas
                         .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/esqueci-senha", "/auth/redefinir-senha").permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
+
+                        // Feed público de resíduos
+                        .requestMatchers(HttpMethod.GET, "/residuos/feed").permitAll()
+
+                        // Consulta pública das imagens dos resíduos
+                        .requestMatchers(HttpMethod.GET, "/residuos/imagens/*").permitAll()
 
                         // Todos os endpoints administrativos exigem perfil ADMIN
                         .requestMatchers("/admin/**").hasRole("ADMIN")

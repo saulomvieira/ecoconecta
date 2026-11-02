@@ -18,7 +18,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     @Query("""
             SELECT u FROM Usuario u
-            WHERE (:busca IS NULL OR LOWER(u.nome) LIKE LOWER(CONCAT('%', :busca, '%'))
+            WHERE (LOWER(u.nome) LIKE LOWER(CONCAT('%', :busca, '%'))
                    OR LOWER(u.email) LIKE LOWER(CONCAT('%', :busca, '%')))
               AND (:perfil IS NULL OR u.perfil = :perfil)
             ORDER BY u.id DESC
