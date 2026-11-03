@@ -45,6 +45,10 @@ public class UsuarioService {
             );
         }
 
+        if (usuario.getSenha() == null || usuario.getSenha().length() < 8) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A senha deve ter pelo menos 8 caracteres");
+        }
+
         var termoAtual = termos.findFirstByAtivoTrueOrderByDataAtualizacaoDesc().orElse(null);
         if (termoAtual != null && !Boolean.TRUE.equals(usuario.getAceitouTermos())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "É necessário aceitar os termos de uso atuais");

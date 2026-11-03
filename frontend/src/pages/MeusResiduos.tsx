@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Navigate, useSearchParams } from 'react-router-dom'
 import { Lock, Pencil, Plus, Trash2 } from 'lucide-react'
 import { mensagemErro } from '../api/admin'
-import { listarMinhasReservas } from '../api/reservas'
+import { confirmarColeta, listarMinhasReservas, listarReservasRecebidas, type ReservaRecebida } from '../api/reservas'
 import { excluirResiduo, listarFeed, type ResiduoDisponibilidade } from '../api/residuos'
 import { useAuth } from '../auth/AuthContext'
 import { IconeCategoria } from '../components/IconeCategoria'
@@ -31,15 +31,20 @@ export function MeusResiduos() {
   const [excluindo, setExcluindo] = useState<ResiduoDisponibilidade | null>(null)
   const [erroExcluir, setErroExcluir] = useState('')
   const [apagando, setApagando] = useState(false)
+  const [recebidas, setRecebidas] = useState<Record<number, ReservaRecebida>>({})
+  const [confirmando, setConfirmando] = useState<ReservaRecebida | null>(null)
+  const [erroConfirmar, setErroConfirmar] = useState('')
+  const [coletando, setColetando] = useState(false)
 
   const [versao, setVersao] = useState(0)
   const recarregar = () => setVersao((v) => v + 1)
 
   useEffect(() => {
     let ativo = true
-    Promise.all([listarFeed(), listarMinhasReservas().catch(() => [])])
-      .then(([feed, minhas]) => {
+    Promise.all([listarFeed(), listarMinhasReservas().catch(() => []), listarReservasRecebidas().catch(() => [])])
+      .then(([feed, minhas, recebidasApi]) => {
         if (!ativo) return
+        setRecebidas(Object.fromEntries(recebidasApi.map((r) => [r.residuoId, r])))
         setItens(feed.filter((i) => i.residuo.usuario?.id === usuarioId))
         setReservas(minhas.length)
         setErro('')
@@ -61,6 +66,21 @@ export function MeusResiduos() {
       setErroExcluir(mensagemErro(e, 'Não foi possível excluir o resíduo.'))
     } finally {
       setApagando(false)
+    }
+  }
+
+  async function confirmarRecebimento() {
+    if (!confirmando) return
+    setColetando(true)
+    setErroConfirmar('')
+    try {
+      await confirmarColeta(confirmando.id)
+      setConfirmando(null)
+      recarregar()
+    } catch (e) {
+      setErroConfirmar(mensagemErro(e, 'Não foi possível confirmar a coleta.'))
+    } finally {
+      setColetando(false)
     }
   }
 
@@ -99,6 +119,7 @@ export function MeusResiduos() {
         {itens.map(({ residuo, status }) => {
           const info = STATUS_RESIDUO[status] ?? STATUS_RESIDUO.DISPONIVEL
           const finalizado = status === 'COLETADO'
+          const reserva = status === 'RESERVADO' ? recebidas[residuo.id] : undefined
           return (
             <li key={residuo.id} className="meus-residuos-item">
               <div className="mr-principal">
@@ -112,6 +133,9 @@ export function MeusResiduos() {
               <span className="mr-coluna"><span className={`mr-status ${info.classe}`}>{info.rotulo}</span></span>
               <span className="mr-coluna mr-data">{dataCurta(residuo.dataCadastro)}</span>
               <div className="mr-acoes">
+                {reserva && (
+                  <button type="button" className="mr-confirmar" onClick={() => { setErroConfirmar(''); setConfirmando(reserva) }}>Confirmar coleta</button>
+                )}
                 {finalizado ? (
                   <span className="mr-finalizado">Finalizado <Lock /></span>
                 ) : (
@@ -130,6 +154,17 @@ export function MeusResiduos() {
       )}
 
       {formulario && <CadastrarResiduo residuo={formulario.item?.residuo} onClose={() => setFormulario(null)} onSalvo={aoSalvar} />}
+
+      {confirmando && (
+        <Modal titulo="Confirmar coleta" onClose={() => !coletando && setConfirmando(null)}>
+          <p>Confirmar que {confirmando.reservadoPor} coletou este resíduo? Esta ação não pode ser desfeita.</p>
+          {erroConfirmar && <p className="error" role="alert">{erroConfirmar}</p>}
+          <div className="actions end">
+            <button type="button" className="btn" onClick={() => setConfirmando(null)} disabled={coletando}>Cancelar</button>
+            <button type="button" className="btn primary" onClick={confirmarRecebimento} disabled={coletando}>{coletando ? 'Confirmando…' : 'Confirmar coleta'}</button>
+          </div>
+        </Modal>
+      )}
 
       {excluindo && (
         <Modal titulo="Excluir resíduo" onClose={() => !apagando && setExcluindo(null)}>

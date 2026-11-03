@@ -38,3 +38,22 @@ export async function cancelarReserva(id: number): Promise<void> {
     method: 'DELETE',
   })
 }
+
+export interface ReservaRecebida {
+  id: number
+  status: StatusReserva
+  dataReserva: string
+  residuoId: number
+  reservadoPor: string
+}
+
+export async function listarReservasRecebidas(): Promise<ReservaRecebida[]> {
+  return api<ReservaRecebida[]>('/reservas/recebidas')
+}
+
+export async function confirmarColeta(id: number): Promise<Reserva> {
+  return api<Reserva>(`/reservas/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify({ status: 'COLETADA' }),
+  })
+}
