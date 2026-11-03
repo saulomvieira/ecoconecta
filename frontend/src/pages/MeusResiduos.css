@@ -59,3 +59,5 @@
 .mr-cancelar { font: inherit; font-weight: 600; padding: 4px 12px; background: #fff; color: #b3261e; border: 1px solid #f3c7c4; border-radius: 999px; cursor: pointer; }
 .mr-cancelar:hover { background: #fef2f2; }
 .meus-residuos-vazio a { color: #244e3f; font-weight: 600; }
+.mr-confirmar { font: inherit; font-weight: 600; padding: 4px 12px; background: #244e3f; color: #fff; border: 0; border-radius: 999px; cursor: pointer; white-space: nowrap; }
+.mr-confirmar:hover { background: #1b3b30; }

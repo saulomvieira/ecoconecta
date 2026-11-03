@@ -2,6 +2,7 @@
 package backend.residuos.model;
 
 import backend.usuarios.model.Usuario;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
@@ -57,6 +58,8 @@ public class Residuo {
     @Column(length = 1000)
     private String imagemUrl;
 
+    // Expõe apenas id e nome de quem publicou (o feed é público)
+    @JsonIgnoreProperties({"email", "regiao", "perfil", "ativo"})
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
