@@ -202,7 +202,7 @@ export function DetalhesResiduo({ residuos, carregando, erro, onReservado }: Pro
                 {reservaRealizada ? (
                   <p className="detalhe-sucesso" role="status">
                     Reserva solicitada com sucesso! Acompanhe em{' '}
-                    <Link to="/minhas-reservas">Minhas Reservas</Link>.
+                    <Link to="/meus-residuos?aba=reservas">Minhas Reservas</Link>.
                   </p>
                 ) : !disponivel ? (
                   <p className="detalhe-nota">Este resíduo não está disponível para reserva.</p>
