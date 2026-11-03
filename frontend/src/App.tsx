@@ -1,3 +1,4 @@
+import { PlanosUsuario } from './pages/PlanosUsuario'
 
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { AuthProvider, useAuth } from './auth/AuthContext'
@@ -42,6 +43,7 @@ export default function App() {
 
           {/* Área dos usuários */}
           <Route element={<UserNavbar />}>
+            <Route path="/planos" element={<PlanosUsuario />} />
             <Route path="/feed" element={<FeedComDetalhes />} />
             <Route path="/meus-residuos" element={<MeusResiduos />} />
             <Route path="/residuos/:id" element={<FeedComDetalhes />} />

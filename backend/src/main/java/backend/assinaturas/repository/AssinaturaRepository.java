@@ -32,4 +32,7 @@ public interface AssinaturaRepository extends JpaRepository<Assinatura, Long> {
     long countByStatus(StatusAssinatura status);
     boolean existsByPlanoId(Long planoId);
 
+
+    List<Assinatura> findByUsuarioIdOrderByDataInicioDesc(Long usuarioId);
+
 }
