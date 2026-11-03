@@ -110,6 +110,17 @@ public class UsuarioService {
         return repository.save(usuario);
     }
 
+    // Atualizar nome, e-mail e região do usuário autenticado
+    public Usuario atualizarPerfil(String nome, String email, String regiao) {
+
+        Usuario dados = new Usuario();
+        dados.setNome(nome);
+        dados.setEmail(email);
+        dados.setRegiao(regiao);
+
+        return atualizar(Long.valueOf(obterJwt().getSubject()), dados);
+    }
+
     // Excluir usuário - somente ADMIN
     public void excluir(Long id) {
 
