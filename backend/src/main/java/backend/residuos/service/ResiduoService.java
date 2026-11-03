@@ -41,21 +41,12 @@ public class ResiduoService {
         this.reservaRepository = reservaRepository;
     }
 
-    // Cadastrar resíduo
+     // Cadastrar resíduo
     public Residuo cadastrar(Residuo residuo) {
 
-        if (residuo.getUsuario() == null ||
-                residuo.getUsuario().getId() == null) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "O usuário responsável é obrigatório"
-            );
-        }
-
-        Long usuarioId = residuo.getUsuario().getId();
-
-        // Impede cadastrar resíduos em nome de outra pessoa
-        exigirProprietarioOuAdmin(usuarioId);
+        // Identifica o usuário pelo token JWT
+        Jwt jwt = obterJwt();
+        Long usuarioId = Long.valueOf(jwt.getSubject());
 
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -65,6 +56,8 @@ public class ResiduoService {
 
         // Impede informar um ID para sobrescrever outro resíduo
         residuo.setId(null);
+
+        // Associa o resíduo ao usuário autenticado
         residuo.setUsuario(usuario);
 
         return repository.save(residuo);
@@ -83,13 +76,10 @@ public class ResiduoService {
                         "Resíduo não encontrado"
                 ));
     }
-
-
     // Atualizar resíduo
     public Residuo atualizar(Long id, Residuo dados) {
 
         Residuo residuo = buscarPorId(id);
-
         // Somente o proprietário ou ADMIN pode atualizar
         exigirProprietarioOuAdmin(residuo.getUsuario().getId());
 
