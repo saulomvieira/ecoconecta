@@ -1,6 +1,10 @@
 
 package backend.assinaturas.service;
 
+import org.springframework.transaction.annotation.Transactional;
+
+import backend.assinaturas.dto.MinhaAssinaturaResponse;
+
 import backend.assinaturas.model.Assinatura;
 import backend.assinaturas.model.StatusAssinatura;
 import backend.assinaturas.repository.AssinaturaRepository;
@@ -315,4 +319,24 @@ public class AssinaturaService {
             );
         }
     }
+    /** Consulta o historico da conta autenticada, sem expor dados do usuario. */
+    @Transactional
+    public List<MinhaAssinaturaResponse> listarMinhas() {
+        Long usuarioId = Long.valueOf(obterJwt().getSubject());
+        return repository.findByUsuarioIdOrderByDataInicioDesc(usuarioId)
+                .stream()
+                .map(assinatura -> {
+                    verificarExpiracao(assinatura);
+                    Plano plano = assinatura.getPlano();
+                    return new MinhaAssinaturaResponse(
+                            assinatura.getId(),
+                            plano.getId(),
+                            plano.getNome(),
+                            assinatura.getStatus().name(),
+                            assinatura.getDataInicio(),
+                            assinatura.getDataFim()
+                    );
+                }).toList();
+    }
+
 }

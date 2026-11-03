@@ -16,7 +16,7 @@ interface Sessao {
 
 interface AuthContextValue {
   sessao: Sessao | null
-  entrar: (email: string, senha: string) => Promise<void>
+  entrar: (email: string, senha: string, lembrar?: boolean) => Promise<void>
   sair: () => void
 }
 
@@ -66,12 +66,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setSessao(null)
   }, [])
 
-  const entrar = useCallback(async (email: string, senha: string) => {
+  const entrar = useCallback(async (email: string, senha: string, lembrar = true) => {
     const { token } = await api<{ token: string }>('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, senha }),
     })
-    tokenStorage.set(token)
+    tokenStorage.set(token, lembrar)
     setSessao(lerSessao(token))
   }, [])
 

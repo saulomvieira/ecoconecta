@@ -45,6 +45,12 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     // Listar reservas realizadas por um usuário
     List<Reserva> findByUsuarioIdOrderByDataReservaDesc(Long usuarioId);
 
+    // Listar reservas recebidas pelo dono dos resíduos
+    List<Reserva> findByResiduoUsuarioIdAndStatusOrderByDataReservaDesc(
+            Long usuarioId,
+            StatusReserva status
+    );
+
     // Verificar se um resíduo possui qualquer reserva associada
     boolean existsByResiduoId(Long residuoId);
 

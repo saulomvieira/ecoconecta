@@ -1,277 +1,135 @@
-
 import { useEffect, useState } from 'react'
-import { Link, Navigate } from 'react-router-dom'
-import {
-    listarMinhasReservas,
-    cancelarReserva,
-    type Reserva,
-    type StatusReserva,
-} from '../api/reservas'
-import { useAuth } from '../auth/AuthContext'
-import './MinhasReservas.css'
+import { Link } from 'react-router-dom'
+import { mensagemErro } from '../api/admin'
+import { cancelarReserva, listarMinhasReservas, type Reserva, type StatusReserva } from '../api/reservas'
+import { IconeCategoria } from '../components/IconeCategoria'
+import { Modal } from '../components/Modal'
 
-type FiltroReserva = 'TODAS' | StatusReserva
+type Filtro = 'TODAS' | StatusReserva
 
-const filtros: { valor: FiltroReserva; titulo: string }[] = [
-    { valor: 'TODAS', titulo: 'Todas' },
-    { valor: 'RESERVADA', titulo: 'Ativas' },
-    { valor: 'COLETADA', titulo: 'Concluídas' },
-    { valor: 'CANCELADA', titulo: 'Canceladas' },
+const FILTROS: { valor: Filtro; titulo: string }[] = [
+  { valor: 'TODAS', titulo: 'Todas' },
+  { valor: 'RESERVADA', titulo: 'Ativas' },
+  { valor: 'COLETADA', titulo: 'Concluídas' },
+  { valor: 'CANCELADA', titulo: 'Canceladas' },
 ]
 
-const nomesStatus: Record<StatusReserva, string> = {
-    RESERVADA: 'Ativa',
-    COLETADA: 'Concluída',
-    CANCELADA: 'Cancelada',
+const STATUS: Record<StatusReserva, { rotulo: string; classe: string }> = {
+  RESERVADA: { rotulo: 'Ativa', classe: 'disponivel' },
+  COLETADA: { rotulo: 'Concluída', classe: 'coletado' },
+  CANCELADA: { rotulo: 'Cancelada', classe: 'cancelado' },
 }
 
-const mensagensVazias: Record<FiltroReserva, string> = {
-    TODAS: 'Você ainda não realizou nenhuma reserva.',
-    RESERVADA: 'Você não possui reservas ativas.',
-    COLETADA: 'Você ainda não possui reservas concluídas.',
-    CANCELADA: 'Você não possui reservas canceladas.',
+const VAZIO: Record<Filtro, string> = {
+  TODAS: 'Você ainda não realizou nenhuma reserva.',
+  RESERVADA: 'Você não possui reservas ativas.',
+  COLETADA: 'Você ainda não possui reservas concluídas.',
+  CANCELADA: 'Você não possui reservas canceladas.',
 }
 
-export function MinhasReservas() {
-    const { sessao } = useAuth()
+function dataCurta(iso: string): string {
+  const d = new Date(iso)
+  return Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
+}
 
-    const [reservas, setReservas] = useState<Reserva[]>([])
-    const [filtro, setFiltro] = useState<FiltroReserva>('TODAS')
-    const [carregando, setCarregando] = useState(true)
-    const [erro, setErro] = useState('')
-    const [cancelandoId, setCancelandoId] = useState<number | null>(null)
+export function MinhasReservas({ onContagem }: { onContagem?: (n: number) => void }) {
+  const [reservas, setReservas] = useState<Reserva[]>([])
+  const [filtro, setFiltro] = useState<Filtro>('TODAS')
+  const [carregando, setCarregando] = useState(true)
+  const [erro, setErro] = useState('')
+  const [cancelando, setCancelando] = useState<Reserva | null>(null)
+  const [processando, setProcessando] = useState(false)
+  const [erroCancelar, setErroCancelar] = useState('')
 
-    useEffect(() => {
-        if (!sessao) return
+  useEffect(() => {
+    let ativo = true
+    listarMinhasReservas()
+      .then((dados) => {
+        if (!ativo) return
+        setReservas(dados)
+        onContagem?.(dados.length)
+      })
+      .catch(() => ativo && setErro('Não foi possível carregar suas reservas.'))
+      .finally(() => ativo && setCarregando(false))
+    return () => { ativo = false }
+  }, [onContagem])
 
-        let ativo = true
-
-        async function carregarReservas() {
-            setCarregando(true)
-            setErro('')
-
-            try {
-                const dados = await listarMinhasReservas()
-
-                if (ativo) {
-                    setReservas(dados)
-                }
-            } catch {
-                if (ativo) {
-                    setErro('Não foi possível carregar suas reservas.')
-                }
-            } finally {
-                if (ativo) {
-                    setCarregando(false)
-                }
-            }
-        }
-
-        carregarReservas()
-
-        return () => {
-            ativo = false
-        }
-    }, [sessao])
-
-    async function handleCancelar(id: number) {
-        if (!window.confirm('Deseja realmente cancelar esta reserva?')) {
-            return
-        }
-
-        setCancelandoId(id)
-        setErro('')
-
-        try {
-            await cancelarReserva(id)
-
-            setReservas((atual) =>
-                atual.map((reserva) =>
-                    reserva.id === id
-                        ? { ...reserva, status: 'CANCELADA' }
-                        : reserva
-                )
-            )
-        } catch (error) {
-            setErro(
-                error instanceof Error
-                    ? error.message
-                    : 'Não foi possível cancelar a reserva.'
-            )
-        } finally {
-            setCancelandoId(null)
-        }
+  async function confirmarCancelamento() {
+    if (!cancelando) return
+    setProcessando(true)
+    setErroCancelar('')
+    try {
+      await cancelarReserva(cancelando.id)
+      setReservas((atual) => atual.map((r) => (r.id === cancelando.id ? { ...r, status: 'CANCELADA' } : r)))
+      setCancelando(null)
+    } catch (e) {
+      setErroCancelar(mensagemErro(e, 'Não foi possível cancelar a reserva.'))
+    } finally {
+      setProcessando(false)
     }
+  }
 
-    if (!sessao) {
-        return (
-            <Navigate
-                to="/login"
-                replace
-                state={{ from: '/minhas-reservas' }}
-            />
-        )
-    }
+  const contagem = (f: Filtro) => (f === 'TODAS' ? reservas.length : reservas.filter((r) => r.status === f).length)
+  const visiveis = reservas
+    .filter((r) => filtro === 'TODAS' || r.status === filtro)
+    .sort((a, b) => new Date(b.dataReserva).getTime() - new Date(a.dataReserva).getTime())
 
-    const contadores: Record<FiltroReserva, number> = {
-        TODAS: reservas.length,
-        RESERVADA: reservas.filter(
-            (reserva) => reserva.status === 'RESERVADA'
-        ).length,
-        COLETADA: reservas.filter(
-            (reserva) => reserva.status === 'COLETADA'
-        ).length,
-        CANCELADA: reservas.filter(
-            (reserva) => reserva.status === 'CANCELADA'
-        ).length,
-    }
+  if (carregando) return <p className="muted">Carregando…</p>
+  if (erro) return <p className="error" role="alert">{erro}</p>
 
-    const reservasFiltradas = reservas
-        .filter(
-            (reserva) =>
-                filtro === 'TODAS' || reserva.status === filtro
-        )
-        .sort(
-            (a, b) =>
-                new Date(b.dataReserva).getTime() -
-                new Date(a.dataReserva).getTime()
-        )
+  return (
+    <>
+      <div className="mr-filtros" role="group" aria-label="Filtrar reservas por status">
+        {FILTROS.map(({ valor, titulo }) => (
+          <button key={valor} type="button" className={`mr-filtro${filtro === valor ? ' ativo' : ''}`} aria-pressed={filtro === valor} onClick={() => setFiltro(valor)}>
+            {titulo} ({contagem(valor)})
+          </button>
+        ))}
+      </div>
 
-    return (
-        <main className="minhas-reservas-container">
-            <Link to="/feed" className="minhas-reservas-voltar">
-                ← Voltar ao feed
-            </Link>
-
-            <h1>Minhas Reservas</h1>
-
-            <p className="minhas-reservas-subtitulo">
-                Acompanhe suas reservas ativas e consulte seu histórico
-                de coletas e cancelamentos.
-            </p>
-
-            {erro && (
-                <p className="minhas-reservas-erro" role="alert">
-                    {erro}
-                </p>
-            )}
-
-            {carregando ? (
-                <p role="status">Carregando reservas...</p>
-            ) : erro && reservas.length === 0 ? (
-                <div className="minhas-reservas-vazio">
-                    <h2>Não foi possível consultar suas reservas</h2>
-                    <p>Tente atualizar a página novamente.</p>
+      {visiveis.length === 0 ? (
+        <p className="meus-residuos-vazio">
+          {VAZIO[filtro]} {filtro === 'TODAS' && <Link to="/feed">Explorar resíduos</Link>}
+        </p>
+      ) : (
+        <ul className="meus-residuos-lista">
+          {visiveis.map((reserva) => {
+            const { residuo } = reserva
+            const info = STATUS[reserva.status]
+            return (
+              <li key={reserva.id} className="meus-residuos-item">
+                <div className="mr-principal">
+                  <span className={`mr-icone${reserva.status === 'RESERVADA' ? '' : ' cinza'}`}><IconeCategoria categoria={residuo.categoria} /></span>
+                  <div className="mr-texto">
+                    <strong>{residuo.nome} - {residuo.quantidade} {residuo.unidadeMedida}</strong>
+                    <span>{residuo.enderecoColeta}</span>
+                  </div>
                 </div>
-            ) : (
-                <>
-                    <div
-                        className="minhas-reservas-filtros"
-                        aria-label="Filtrar reservas por status"
-                    >
-                        {filtros.map((item) => (
-                            <button
-                                key={item.valor}
-                                type="button"
-                                className={
-                                    `minhas-reservas-filtro ${
-                                        filtro === item.valor ? 'ativo' : ''
-                                    }`
-                                }
-                                aria-pressed={filtro === item.valor}
-                                onClick={() => setFiltro(item.valor)}
-                            >
-                                <span>{item.titulo}</span>
-                                <span className="minhas-reservas-contador">
-                                    {contadores[item.valor]}
-                                </span>
-                            </button>
-                        ))}
-                    </div>
+                <span className="mr-coluna mr-regiao">{residuo.regiao}</span>
+                <span className="mr-coluna"><span className={`mr-status ${info.classe}`}>{info.rotulo}</span></span>
+                <span className="mr-coluna mr-data">{dataCurta(reserva.dataReserva)}</span>
+                <div className="mr-acoes mr-acoes-reserva">
+                  <Link to={`/residuos/${residuo.id}`} className="mr-link">Ver resíduo</Link>
+                  {reserva.status === 'RESERVADA' && (
+                    <button type="button" className="mr-cancelar" onClick={() => { setErroCancelar(''); setCancelando(reserva) }}>Cancelar</button>
+                  )}
+                </div>
+              </li>
+            )
+          })}
+        </ul>
+      )}
 
-                    {reservasFiltradas.length === 0 ? (
-                        <div className="minhas-reservas-vazio">
-                            <h2>Nenhuma reserva encontrada</h2>
-                            <p>{mensagensVazias[filtro]}</p>
-
-                            {filtro === 'TODAS' ? (
-                                <Link to="/feed">
-                                    Explorar resíduos
-                                </Link>
-                            ) : (
-                                <button
-                                    type="button"
-                                    className="minhas-reservas-limpar"
-                                    onClick={() => setFiltro('TODAS')}
-                                >
-                                    Ver todas as reservas
-                                </button>
-                            )}
-                        </div>
-                    ) : (
-                        <div className="minhas-reservas-lista">
-                            {reservasFiltradas.map((reserva) => (
-                                <article
-                                    key={reserva.id}
-                                    className="minhas-reservas-card"
-                                >
-                                    <div className="minhas-reservas-card-topo">
-                                        <h2>{reserva.residuo.nome}</h2>
-
-                                        <span
-                                            className={
-                                                `minhas-reservas-status status-${
-                                                    reserva.status.toLowerCase()
-                                                }`
-                                            }
-                                        >
-                                            {nomesStatus[reserva.status]}
-                                        </span>
-                                    </div>
-
-                                    <p>
-                                        Categoria: {reserva.residuo.categoria}
-                                    </p>
-
-                                    <p>
-                                        Região: {reserva.residuo.regiao}
-                                    </p>
-
-                                    <p>
-                                        Data da reserva:{' '}
-                                        {new Date(
-                                            reserva.dataReserva
-                                        ).toLocaleDateString('pt-BR')}
-                                    </p>
-
-                                    <div className="minhas-reservas-acoes">
-                                        <Link
-                                            to={`/residuos/${reserva.residuo.id}`}
-                                        >
-                                            Ver resíduo
-                                        </Link>
-
-                                        {reserva.status === 'RESERVADA' && (
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    handleCancelar(reserva.id)
-                                                }
-                                                disabled={cancelandoId !== null}
-                                                className="minhas-reservas-cancelar"
-                                            >
-                                                {cancelandoId === reserva.id
-                                                    ? 'Cancelando...'
-                                                    : 'Cancelar reserva'}
-                                            </button>
-                                        )}
-                                    </div>
-                                </article>
-                            ))}
-                        </div>
-                    )}
-                </>
-            )}
-        </main>
-    )
+      {cancelando && (
+        <Modal titulo="Cancelar reserva" onClose={() => !processando && setCancelando(null)}>
+          <p>Deseja realmente cancelar a reserva de “{cancelando.residuo.nome}”?</p>
+          {erroCancelar && <p className="error" role="alert">{erroCancelar}</p>}
+          <div className="actions end">
+            <button type="button" className="btn" onClick={() => setCancelando(null)} disabled={processando}>Voltar</button>
+            <button type="button" className="btn danger" onClick={confirmarCancelamento} disabled={processando}>{processando ? 'Cancelando…' : 'Cancelar reserva'}</button>
+          </div>
+        </Modal>
+      )}
+    </>
+  )
 }

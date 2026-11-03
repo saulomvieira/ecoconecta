@@ -1,5 +1,6 @@
 package backend.reservas.controller;
 
+import backend.reservas.dto.ReservaRecebidaResponse;
 import backend.reservas.model.Reserva;
 import backend.reservas.model.Reserva.StatusReserva;
 import backend.reservas.service.ReservaService;
@@ -35,6 +36,12 @@ public class ReservaController {
     @GetMapping
     public List<Reserva> listar() {
         return reservaService.listar();
+    }
+
+    // Listar reservas ativas dos resíduos do usuário autenticado
+    @GetMapping("/recebidas")
+    public List<ReservaRecebidaResponse> listarRecebidas() {
+        return reservaService.listarRecebidas();
     }
 
     // Buscar reserva pelo ID

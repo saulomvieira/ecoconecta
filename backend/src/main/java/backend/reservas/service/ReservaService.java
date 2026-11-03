@@ -5,6 +5,7 @@ import backend.assinaturas.model.Assinatura;
 import backend.assinaturas.model.StatusAssinatura;
 import backend.assinaturas.repository.AssinaturaRepository;
 import backend.planos.model.Plano;
+import backend.reservas.dto.ReservaRecebidaResponse;
 import backend.reservas.model.Reserva;
 import backend.reservas.model.Reserva.StatusReserva;
 import backend.reservas.repository.ReservaRepository;
@@ -142,6 +143,19 @@ public class ReservaService {
 
         return reservaRepository
                 .findByUsuarioIdOrderByDataReservaDesc(usuarioId);
+    }
+
+    // Listar reservas ativas dos resíduos do usuário autenticado
+    public List<ReservaRecebidaResponse> listarRecebidas() {
+
+        return reservaRepository
+                .findByResiduoUsuarioIdAndStatusOrderByDataReservaDesc(
+                        usuarioAutenticadoId(),
+                        StatusReserva.RESERVADA
+                )
+                .stream()
+                .map(ReservaRecebidaResponse::de)
+                .toList();
     }
 
     // Buscar reserva por ID

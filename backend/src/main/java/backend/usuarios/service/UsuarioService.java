@@ -45,6 +45,10 @@ public class UsuarioService {
             );
         }
 
+        if (usuario.getSenha() == null || usuario.getSenha().length() < 8) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A senha deve ter pelo menos 8 caracteres");
+        }
+
         var termoAtual = termos.findFirstByAtivoTrueOrderByDataAtualizacaoDesc().orElse(null);
         if (termoAtual != null && !Boolean.TRUE.equals(usuario.getAceitouTermos())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "É necessário aceitar os termos de uso atuais");
@@ -108,6 +112,17 @@ public class UsuarioService {
 
         // Senha e perfil não são alterados por este endpoint
         return repository.save(usuario);
+    }
+
+    // Atualizar nome, e-mail e região do usuário autenticado
+    public Usuario atualizarPerfil(String nome, String email, String regiao) {
+
+        Usuario dados = new Usuario();
+        dados.setNome(nome);
+        dados.setEmail(email);
+        dados.setRegiao(regiao);
+
+        return atualizar(Long.valueOf(obterJwt().getSubject()), dados);
     }
 
     // Excluir usuário - somente ADMIN
@@ -190,7 +205,6 @@ public class UsuarioService {
     // Pesquisa administrativa com filtros opcionais.
     public List<Usuario> buscarUsuariosAdmin(String busca, String perfil) {
         exigirAdmin();
-        // String vazia (e não null): o Postgres não infere o tipo de um parâmetro null em LOWER().
         String termo = busca == null ? "" : busca.trim();
         Perfil filtro = null;
         if (perfil != null && !perfil.isBlank()) {

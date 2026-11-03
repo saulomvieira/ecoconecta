@@ -1,9 +1,15 @@
 const TOKEN_KEY = 'ecoconecta.token'
 
 export const tokenStorage = {
-  get: () => localStorage.getItem(TOKEN_KEY),
-  set: (token: string) => localStorage.setItem(TOKEN_KEY, token),
-  clear: () => localStorage.removeItem(TOKEN_KEY),
+  get: () => localStorage.getItem(TOKEN_KEY) ?? sessionStorage.getItem(TOKEN_KEY),
+  set: (token: string, lembrar = true) => {
+    tokenStorage.clear()
+    ;(lembrar ? localStorage : sessionStorage).setItem(TOKEN_KEY, token)
+  },
+  clear: () => {
+    localStorage.removeItem(TOKEN_KEY)
+    sessionStorage.removeItem(TOKEN_KEY)
+  },
 }
 
 export class ApiError extends Error {
@@ -33,7 +39,9 @@ function extrairMensagem(corpo: unknown, status: number): string {
 export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
   const token = tokenStorage.get()
   const headers = new Headers(init.headers)
-  if (init.body) headers.set('Content-Type', 'application/json')
+   if (init.body && !(init.body instanceof FormData)) {
+  headers.set('Content-Type', 'application/json')
+}
   if (token) headers.set('Authorization', `Bearer ${token}`)
 
   let resposta: Response

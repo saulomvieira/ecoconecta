@@ -1,0 +1,63 @@
+.meus-residuos { max-width: 1152px; margin: 0 auto; padding: 40px; display: flex; flex-direction: column; gap: 24px; }
+.meus-residuos-topo { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.meus-residuos-topo h1 { font-family: Georgia, 'Liberation Serif', serif; font-size: 24px; line-height: 32px; letter-spacing: -0.6px; color: #244e3f; }
+.meus-residuos-novo {
+  display: inline-flex; align-items: center; gap: 8px; font: inherit; font-weight: 600; padding: 10px 20px;
+  background: #244e3f; color: #fff; border: 0; border-radius: 999px; cursor: pointer; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+.meus-residuos-novo:hover { background: #1c3d2e; }
+.meus-residuos-novo svg { width: 16px; height: 16px; }
+.meus-residuos-abas { display: flex; gap: 32px; border-bottom: 1px solid #e7e5e4; }
+.meus-residuos-abas .aba {
+  font: inherit; font-weight: 500; padding: 0 0 12px; margin-bottom: -1px; background: none; border: 0;
+  border-bottom: 2px solid transparent; color: #78716c; cursor: pointer; text-decoration: none;
+}
+.meus-residuos-abas .aba:hover { color: #244e3f; }
+.meus-residuos-abas .aba.ativa { font-weight: 700; color: #244e3f; border-bottom-color: #244e3f; }
+.meus-residuos-vazio { color: #78716c; margin: 0; }
+.meus-residuos-lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+.meus-residuos-item {
+  display: flex; align-items: center; gap: 16px; padding: 16px 20px; background: #fff; border-radius: 12px;
+  border: 1px solid rgba(231, 229, 228, 0.8); box-shadow: 0 1px 1.5px rgba(0, 0, 0, 0.04), 0 1px 1px rgba(0, 0, 0, 0.02);
+}
+.mr-principal { flex: 1 1 0; min-width: 0; display: flex; align-items: center; gap: 16px; }
+.mr-icone { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: #e8eee9; color: #244e3f; flex-shrink: 0; }
+.mr-icone.cinza { background: rgba(231, 229, 228, 0.7); color: #78716c; }
+.mr-icone svg { width: 20px; height: 20px; }
+.mr-texto { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.mr-texto strong { font-size: 15px; line-height: 20px; color: #292524; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mr-texto span { font-size: 13px; line-height: 16px; color: #78716c; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mr-coluna { width: 96px; flex-shrink: 0; font-size: 13px; color: #78716c; }
+.mr-data { width: 72px; }
+.mr-status { display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: 12px; line-height: 16px; font-weight: 600; }
+.mr-status.disponivel { background: #2c6b47; color: #fff; }
+.mr-status.reservado { background: #eed8bc; color: #a76a26; }
+.mr-status.coletado { background: #e3e5e3; color: #5a625e; }
+.mr-acoes { display: flex; align-items: center; justify-content: flex-end; gap: 12px; min-width: 52px; }
+.mr-icone-btn { display: grid; place-items: center; padding: 4px; background: none; border: 0; border-radius: 6px; color: #78716c; cursor: pointer; }
+.mr-icone-btn:hover { background: #f3f4f1; color: #244e3f; }
+.mr-icone-btn.excluir { color: #be123c; }
+.mr-icone-btn.excluir:hover { background: #fff1f2; color: #be123c; }
+.mr-icone-btn svg { width: 16px; height: 16px; }
+.mr-finalizado { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: #a8a29e; white-space: nowrap; }
+.mr-finalizado svg { width: 16px; height: 16px; }
+@media (max-width: 800px) {
+  .meus-residuos { padding: 24px 16px; }
+  .meus-residuos-item { flex-wrap: wrap; }
+  .mr-principal { flex-basis: 100%; }
+  .mr-coluna, .mr-data { width: auto; }
+  .mr-acoes { margin-left: auto; }
+}
+.mr-status.cancelado { background: #fde8e8; color: #b3261e; }
+.mr-filtros { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: -8px; }
+.mr-filtro { font: inherit; font-weight: 500; padding: 6px 14px; border-radius: 999px; background: #fff; color: #57534e; border: 1px solid #e7e5e4; cursor: pointer; }
+.mr-filtro:hover { border-color: #244e3f; }
+.mr-filtro.ativo { background: #244e3f; border-color: #244e3f; color: #fff; font-weight: 600; }
+.mr-acoes-reserva { gap: 16px; }
+.mr-link { font-weight: 600; color: #244e3f; text-decoration: none; white-space: nowrap; }
+.mr-link:hover { text-decoration: underline; }
+.mr-cancelar { font: inherit; font-weight: 600; padding: 4px 12px; background: #fff; color: #b3261e; border: 1px solid #f3c7c4; border-radius: 999px; cursor: pointer; }
+.mr-cancelar:hover { background: #fef2f2; }
+.meus-residuos-vazio a { color: #244e3f; font-weight: 600; }
+.mr-confirmar { font: inherit; font-weight: 600; padding: 4px 12px; background: #244e3f; color: #fff; border: 0; border-radius: 999px; cursor: pointer; white-space: nowrap; }
+.mr-confirmar:hover { background: #1b3b30; }

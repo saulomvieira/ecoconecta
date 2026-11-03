@@ -1,16 +1,21 @@
+import { PlanosUsuario } from './pages/PlanosUsuario'
 
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { AuthProvider, useAuth } from './auth/AuthContext'
 import { AdminLayout } from './components/AdminLayout'
+import { UserNavbar } from './components/UserNavbar'
 import { DashboardPage } from './pages/Dashboard'
+import { Cadastro } from './pages/Cadastro'
+import { EsqueciSenha } from './pages/EsqueciSenha'
 import { Login } from './pages/Login'
 import { PlanosPage } from './pages/Planos'
+import { RedefinirSenha } from './pages/RedefinirSenha'
 import { ResiduosPage } from './pages/Residuos'
 import { TermosUsoPage } from './pages/TermosUso'
 import { UsuariosPage } from './pages/Usuarios'
-import { FeedResiduos } from './pages/FeedResiduos'
-import { DetalhesResiduo } from './pages/DetalhesResiduo'
-import { MinhasReservas } from './pages/MinhasReservas'
+import { FeedComDetalhes } from './pages/FeedComDetalhes'
+import { MeusResiduos } from './pages/MeusResiduos'
+import { Perfil } from './pages/Perfil'
 
 function RequireAdmin({ children }: { children: React.ReactNode }) {
   const { sessao } = useAuth()
@@ -33,11 +38,19 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/cadastro" element={<Cadastro />} />
+          <Route path="/esqueci-senha" element={<EsqueciSenha />} />
+          <Route path="/redefinir-senha" element={<RedefinirSenha />} />
 
           {/* Área dos usuários */}
-          <Route path="/feed" element={<FeedResiduos />} />
-          <Route path="/residuos/:id" element={<DetalhesResiduo />} />
-          <Route path="/minhas-reservas" element={<MinhasReservas />} />
+          <Route element={<UserNavbar />}>
+            <Route path="/perfil" element={<Perfil />} />
+            <Route path="/planos" element={<PlanosUsuario />} />
+            <Route path="/feed" element={<FeedComDetalhes />} />
+            <Route path="/meus-residuos" element={<MeusResiduos />} />
+            <Route path="/residuos/:id" element={<FeedComDetalhes />} />
+            <Route path="/minhas-reservas" element={<Navigate to="/meus-residuos?aba=reservas" replace />} />
+          </Route>
 
           {/* Área administrativa */}
           <Route

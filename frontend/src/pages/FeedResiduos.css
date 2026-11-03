@@ -1,193 +1,295 @@
 .feed-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 40px 24px;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 44px 24px 72px;
 }
 
-.feed-header {
-    margin-bottom: 32px;
+.feed-topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
 }
 
-.feed-header h1 {
-    font-size: 32px;
-    margin-bottom: 8px;
+.feed-topo h1 {
+  font-size: 38px;
+  line-height: 1.1;
+  letter-spacing: -1px;
+  color: var(--green-900);
+  padding-top: 8px;
 }
 
-.feed-header p {
-    color: #64748b;
+.feed-regiao {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
 }
 
-.feed-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 24px;
+.feed-regiao small {
+  color: #7d837f;
+  font-size: 12.5px;
 }
 
-.residuo-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 14px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+.feed-regiao-select {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 48px;
+  min-width: 270px;
+  padding: 0 18px;
+  border: 1px solid #b9cfc0;
+  border-radius: 999px;
+  background: #eaf1e6;
+  color: var(--green-900);
+  cursor: pointer;
 }
 
-.residuo-imagem {
-    width: 100%;
-    height: 190px;
-    object-fit: cover;
+.feed-regiao-select:focus-within {
+  box-shadow: 0 0 0 3px rgba(40, 77, 59, 0.15);
 }
 
-.residuo-conteudo {
-    padding: 20px;
+.feed-regiao-select svg {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
 }
 
-.residuo-conteudo h3 {
-    margin: 12px 0;
-    color: #1e293b;
-}
-
-.residuo-conteudo p {
-    color: #475569;
-    line-height: 1.5;
-}
-
-.residuo-categoria {
-    color: #15803d;
-    font-size: 13px;
-    font-weight: 600;
-}
-
-.residuo-status {
-    display: inline-block;
-    margin-top: 12px;
-    padding: 6px 12px;
-    background: #dcfce7;
-    color: #166534;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 600;
+.feed-regiao-select select {
+  flex: 1;
+  min-width: 0;
+  appearance: none;
+  border: 0;
+  outline: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: inherit;
+  cursor: pointer;
 }
 
 .feed-filtros {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 12px;
-    margin: 24px 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 32px;
 }
 
-.feed-filtros input[type="search"],
-.feed-filtros select {
-    padding: 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    font-size: 14px;
-    min-width: 180px;
-    flex: 1;
+.feed-filtros .search {
+  flex: 1 1 260px;
 }
 
-.feed-checkbox {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    white-space: nowrap;
+.feed-limpar {
+  font: inherit;
+  font-weight: 600;
+  background: none;
+  border: 0;
+  padding: 6px 4px;
+  color: var(--green-900);
+  cursor: pointer;
+  text-decoration: underline;
 }
 
-.feed-filtros button {
-    padding: 12px 16px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    background: transparent;
-    cursor: pointer;
+.feed-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 26px;
 }
 
-.feed-filtros button:hover {
-    background: #f3f4f6;
+.feed-divisor {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin: 40px 0 30px;
+  color: #8a8f8c;
+  font-size: 13px;
+  font-weight: 500;
 }
 
-.feed-resultados {
-    margin: 16px 0;
-    font-size: 14px;
-    color: #6b7280;
+.feed-divisor::before,
+.feed-divisor::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
 }
 
-@media (max-width: 600px) {
-    .feed-filtros {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .feed-filtros input[type="search"],
-    .feed-filtros select {
-        width: 100%;
-        min-width: 0;
-        flex: auto;
-    }
+.feed-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: 0 1px 3px rgba(20, 40, 31, 0.05);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
-
-.residuo-card-rodape {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 16px;
+.feed-card:hover {
+  box-shadow: 0 10px 28px rgba(20, 40, 31, 0.1);
+  transform: translateY(-2px);
 }
 
-.residuo-card-rodape .residuo-status {
-    margin-top: 0;
+.feed-card-topo {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 120px;
+  background: #dde8d8;
+  color: var(--green-900);
 }
 
-.residuo-detalhes-link {
-    padding: 9px 14px;
-    background: #15803d;
-    color: #ffffff;
-    border-radius: 8px;
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 600;
+.feed-card-topo img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.residuo-detalhes-link:hover {
-    background: #166534;
+.feed-card-icone {
+  width: 46px;
+  height: 46px;
 }
 
-
-.feed-header-topo {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
+.feed-chip {
+  position: absolute;
+  top: 14px;
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 13px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
 }
 
-.feed-header-topo h1 {
-    margin: 0;
+.feed-chip.categoria {
+  left: 14px;
+  background: #fff;
+  color: var(--green-900);
+  text-transform: capitalize;
 }
 
-.feed-minhas-reservas {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 11px 18px;
-    background: #15803d;
-    color: #ffffff;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    text-decoration: none;
-    white-space: nowrap;
-    transition: background 0.2s ease;
+.feed-chip.status {
+  right: 14px;
 }
 
-.feed-minhas-reservas:hover {
-    background: #166534;
+.feed-chip.disponivel {
+  background: var(--green-900);
+  color: #fff;
 }
 
-@media (max-width: 600px) {
-    .feed-header-topo {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+.feed-chip.reservado {
+  background: #fbe3cd;
+  color: #b4540a;
+}
+
+.feed-chip.coletado {
+  background: #eceae4;
+  color: #6b706d;
+}
+
+.feed-card-corpo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  padding: 22px 22px 20px;
+}
+
+.feed-card-corpo h3 {
+  margin: 0;
+  font-size: 19px;
+  line-height: 1.3;
+  letter-spacing: -0.2px;
+}
+
+.feed-card-corpo h3 a {
+  color: var(--green-900);
+  text-decoration: none;
+}
+
+.feed-card-corpo h3 a:hover {
+  text-decoration: underline;
+}
+
+.feed-card-endereco {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  color: #6b706d;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.feed-card-endereco svg {
+  width: 15px;
+  height: 15px;
+  margin-top: 2px;
+  flex-shrink: 0;
+  color: #7d837f;
+}
+
+.feed-card-rodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+
+.feed-card-tempo {
+  color: #8a8f8c;
+  font-size: 13px;
+}
+
+.feed-card-botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 0 24px;
+  border: 0;
+  border-radius: 11px;
+  background: var(--green-900);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.feed-card-botao:hover:not(:disabled) {
+  background: var(--green-800);
+}
+
+.feed-card-botao:disabled {
+  background: #eceae4;
+  color: #8a8f8c;
+  cursor: not-allowed;
+}
+
+@media (max-width: 700px) {
+  .feed-topo {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .feed-topo h1 {
+    font-size: 30px;
+  }
+
+  .feed-regiao {
+    align-items: stretch;
+  }
+
+  .feed-regiao-select {
+    min-width: 0;
+  }
 }

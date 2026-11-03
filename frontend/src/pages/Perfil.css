@@ -1,0 +1,23 @@
+.perfil { width: min(100%, 960px); margin: 0 auto; padding: 40px 24px; color: #1c3d2e; }
+.perfil h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.6px; margin-bottom: 24px; }
+.perfil h2 { font-size: 16px; font-weight: 700; margin: 0 0 4px; }
+.perfil-grade { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+.perfil-coluna { display: flex; flex-direction: column; gap: 20px; }
+.perfil-card { background: #fff; border: 1px solid #e4e9e6; border-radius: 15px; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+.perfil-cabecalho { display: flex; align-items: center; gap: 14px; }
+.perfil-cabecalho div { display: flex; flex-direction: column; min-width: 0; }
+.perfil-cabecalho span:not(.perfil-avatar) { color: #73808c; font-size: 13px; overflow: hidden; text-overflow: ellipsis; }
+.perfil-avatar { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: #244e3f; color: #fff; font-weight: 700; flex: none; }
+.perfil-form { display: flex; flex-direction: column; gap: 14px; }
+.perfil-form label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; }
+.perfil-form input, .perfil-form select { font: inherit; font-weight: 400; padding: 10px 12px; border: 1px solid #d6dcd8; border-radius: 10px; background: #fff; }
+.perfil-form input:focus, .perfil-form select:focus { outline: 2px solid #244e3f33; border-color: #244e3f; }
+.perfil-ok { color: #1b6b45; font-size: 13px; }
+.perfil-plano { font-size: 22px; font-weight: 800; margin: 0; }
+.perfil-uso { display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+.perfil-uso-topo { display: flex; justify-content: space-between; }
+.perfil-barra { height: 8px; border-radius: 999px; background: #e7ece9; overflow: hidden; }
+.perfil-barra span { display: block; height: 100%; background: #244e3f; }
+.perfil-sair { display: inline-flex; align-items: center; justify-content: center; gap: 8px; color: #b3261e; border-color: #f3c7c4; }
+.perfil-sair svg { width: 16px; height: 16px; }
+@media (max-width: 800px) { .perfil-grade { grid-template-columns: 1fr; } }
