@@ -7,7 +7,7 @@ import { LogoIcone } from './LogoIcone'
 
 const links = [
   { to: '/feed', label: 'Feed' },
-  { to: '/minhas-reservas', label: 'Minhas Reservas' },
+  { to: '/meus-residuos', label: 'Meus resíduos' },
 ]
 
 function MenuUsuario({ perfil, admin }: { perfil: MeuPerfil | null; admin: boolean }) {
