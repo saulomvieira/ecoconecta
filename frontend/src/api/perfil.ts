@@ -16,6 +16,10 @@ export interface MeuPerfil {
 
 export const perfilApi = {
   meu: () => api<MeuPerfil>('/usuarios/me'),
+  atualizar: (dados: { nome: string; email: string; regiao: string }) =>
+    api<MeuPerfil>('/usuarios/me', { method: 'PUT', body: JSON.stringify(dados) }),
+  alterarSenha: (id: number, senhaAtual: string, novaSenha: string) =>
+    api<void>(`/usuarios/${id}/senha`, { method: 'PATCH', body: JSON.stringify({ senhaAtual, novaSenha }) }),
 }
 
 // "Bruno Lourenço Santos" -> "Bruno L."

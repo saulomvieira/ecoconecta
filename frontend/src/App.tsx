@@ -15,6 +15,7 @@ import { TermosUsoPage } from './pages/TermosUso'
 import { UsuariosPage } from './pages/Usuarios'
 import { FeedComDetalhes } from './pages/FeedComDetalhes'
 import { MeusResiduos } from './pages/MeusResiduos'
+import { Perfil } from './pages/Perfil'
 
 function RequireAdmin({ children }: { children: React.ReactNode }) {
   const { sessao } = useAuth()
@@ -43,6 +44,7 @@ export default function App() {
 
           {/* Área dos usuários */}
           <Route element={<UserNavbar />}>
+            <Route path="/perfil" element={<Perfil />} />
             <Route path="/planos" element={<PlanosUsuario />} />
             <Route path="/feed" element={<FeedComDetalhes />} />
             <Route path="/meus-residuos" element={<MeusResiduos />} />

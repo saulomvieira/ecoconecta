@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { LayoutDashboard, LogOut } from 'lucide-react'
+import { LayoutDashboard, LogOut, UserRound } from 'lucide-react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
 import { iniciais, nomeAbreviado, perfilApi, type MeuPerfil } from '../api/perfil'
 import { useAuth } from '../auth/AuthContext'
@@ -40,6 +40,7 @@ function MenuUsuario({ perfil, admin }: { perfil: MeuPerfil | null; admin: boole
           {perfil && (
             <div className="menu-info"><strong>{perfil.nome}</strong><span>{perfil.email}</span></div>
           )}
+          <Link to="/perfil" role="menuitem" onClick={() => setAberto(false)}><UserRound /> Meu perfil</Link>
           {admin && <Link to="/admin/dashboard" role="menuitem"><LayoutDashboard /> Painel admin</Link>}
           <button type="button" className="sair" role="menuitem" onClick={sair}><LogOut /> Sair</button>
         </div>
