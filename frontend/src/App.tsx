@@ -12,8 +12,7 @@ import { RedefinirSenha } from './pages/RedefinirSenha'
 import { ResiduosPage } from './pages/Residuos'
 import { TermosUsoPage } from './pages/TermosUso'
 import { UsuariosPage } from './pages/Usuarios'
-import { FeedResiduos } from './pages/FeedResiduos'
-import { DetalhesResiduo } from './pages/DetalhesResiduo'
+import { FeedComDetalhes } from './pages/FeedComDetalhes'
 import { MinhasReservas } from './pages/MinhasReservas'
 
 function RequireAdmin({ children }: { children: React.ReactNode }) {
@@ -43,8 +42,8 @@ export default function App() {
 
           {/* Área dos usuários */}
           <Route element={<UserNavbar />}>
-            <Route path="/feed" element={<FeedResiduos />} />
-            <Route path="/residuos/:id" element={<DetalhesResiduo />} />
+            <Route path="/feed" element={<FeedComDetalhes />} />
+            <Route path="/residuos/:id" element={<FeedComDetalhes />} />
             <Route path="/minhas-reservas" element={<MinhasReservas />} />
           </Route>
 

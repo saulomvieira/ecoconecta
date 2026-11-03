@@ -22,6 +22,7 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       SERVER_ERROR_INCLUDE_STACKTRACE: never
       FRONTEND_URL: http://localhost:5173
+      UPLOAD_DIR: /workspace/uploads/residuos
       SMTP_HOST: ${SMTP_HOST:-}
       SMTP_PORT: ${SMTP_PORT:-587}
       SMTP_USER: ${SMTP_USER:-}
