@@ -1,5 +1,7 @@
 package backend.assinaturas.controller;
 
+import backend.assinaturas.dto.MinhaAssinaturaResponse;
+
 import backend.assinaturas.model.Assinatura;
 import backend.assinaturas.model.StatusAssinatura;
 import backend.assinaturas.service.AssinaturaService;
@@ -49,4 +51,10 @@ public class AssinaturaController {
     public Assinatura renovar(@PathVariable Long id) {
         return service.renovar(id);
     }
+    /** As assinaturas do proprio usuario, identificadas pelo JWT. */
+    @GetMapping("/minha")
+    public List<MinhaAssinaturaResponse> listarMinhas() {
+        return service.listarMinhas();
+    }
+
 }

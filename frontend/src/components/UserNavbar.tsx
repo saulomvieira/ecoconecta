@@ -8,6 +8,7 @@ import { LogoIcone } from './LogoIcone'
 const links = [
   { to: '/feed', label: 'Feed' },
   { to: '/meus-residuos', label: 'Meus resíduos' },
+  { to: '/planos', label: 'Planos' },
 ]
 
 function MenuUsuario({ perfil, admin }: { perfil: MeuPerfil | null; admin: boolean }) {
@@ -55,7 +56,7 @@ export function UserNavbar() {
   useEffect(() => {
     if (id == null) return
     let ativo = true
-    perfilApi.meu().then((p) => ativo && setPerfil(p)).catch(() => {})
+    perfilApi.meu().then((p) => ativo && setPerfil(p)).catch(() => { })
     return () => { ativo = false }
   }, [id])
 
