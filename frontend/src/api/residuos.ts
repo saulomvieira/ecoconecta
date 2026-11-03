@@ -12,6 +12,7 @@ export interface Residuo {
   enderecoColeta: string
   imagemUrl: string | null
   dataCadastro: string
+  usuario?: { id: number; nome: string }
 }
 
 export interface ResiduoDisponibilidade {

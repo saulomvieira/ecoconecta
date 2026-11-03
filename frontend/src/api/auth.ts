@@ -18,9 +18,3 @@ export const authApi = {
 }
 
 export const SENHA_MIN = 8
-
-export const REGIOES = [
-  'Aldeota', 'Benfica', 'Centro', 'Cocó', 'Dionísio Torres', 'Edson Queiroz', 'Fátima',
-  'Joaquim Távora', 'Meireles', 'Messejana', 'Montese', 'Papicu', 'Parangaba', 'Praia de Iracema',
-  'Varjota', 'Vila União',
-]

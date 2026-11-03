@@ -4,6 +4,14 @@ export interface MeuPerfil {
   id: number
   nome: string
   email: string
+  regiao: string | null
+  plano?: string
+  limiteMensal?: number | null
+  limiteSemanal?: number | null
+  coletasMes?: number
+  coletasSemana?: number
+  restantesMes?: number | null
+  restantesSemana?: number | null
 }
 
 export const perfilApi = {
