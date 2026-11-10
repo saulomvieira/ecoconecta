@@ -62,6 +62,12 @@ public class ReservaController {
         );
     }
 
+    // Estender o prazo da reserva por mais 7 dias (dono do resíduo ou ADMIN)
+    @PatchMapping("/{id}/estender")
+    public ReservaRecebidaResponse estender(@PathVariable Long id) {
+        return reservaService.estender(id);
+    }
+
     // Cancelar reserva
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

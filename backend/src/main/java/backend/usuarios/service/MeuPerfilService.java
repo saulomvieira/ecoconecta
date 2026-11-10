@@ -48,7 +48,7 @@ public class MeuPerfilService {
         var plano=assinatura.getPlano();
         Integer lm=plano.getLimiteColetasMes();
         Integer ls=plano.getLimiteColetasSemana();
-        return new MeuPerfilResponse(u.getId(),u.getNome(),u.getEmail(),u.getRegiao(),
+        return new MeuPerfilResponse(u.getId(),u.getNome(),u.getEmail(),u.getRegiao(),u.getTelefone(),
                 u.getPerfil().name(),u.getAtivo(),plano.getNome(),assinatura.getDataFim(),
                 lm,ls,mes,semana,lm==null?null:Math.max(0L,lm-mes),
                 ls==null?null:Math.max(0L,ls-semana));

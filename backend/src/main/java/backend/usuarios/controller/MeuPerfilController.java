@@ -18,16 +18,18 @@ public class MeuPerfilController {
     @GetMapping
     public MeuPerfilResponse consultar() {return service.consultar();}
 
-    // Atualizar nome, e-mail e região do próprio usuário
+    // Atualizar nome, e-mail, região e telefone do próprio usuário
     @PutMapping
     public MeuPerfilResponse atualizar(@Valid @RequestBody AtualizarPerfilRequest request) {
-        usuarioService.atualizarPerfil(request.nome().trim(), request.email().trim(), request.regiao());
+        usuarioService.atualizarPerfil(request.nome().trim(), request.email().trim(),
+                request.regiao(), request.telefone());
         return service.consultar();
     }
 
     public record AtualizarPerfilRequest(
             @NotBlank(message = "O nome é obrigatório") String nome,
             @NotBlank(message = "O e-mail é obrigatório") @Email(message = "O e-mail deve ser válido") String email,
-            String regiao
+            String regiao,
+            @NotBlank(message = "O telefone é obrigatório") String telefone
     ) {}
 }
