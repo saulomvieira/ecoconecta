@@ -49,6 +49,9 @@ public class UsuarioService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A senha deve ter pelo menos 8 caracteres");
         }
 
+        // O telefone é o canal de contato entre quem reserva e quem publica o resíduo
+        usuario.setTelefone(normalizarTelefone(usuario.getTelefone()));
+
         var termoAtual = termos.findFirstByAtivoTrueOrderByDataAtualizacaoDesc().orElse(null);
         if (termoAtual != null && !Boolean.TRUE.equals(usuario.getAceitouTermos())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "É necessário aceitar os termos de uso atuais");
@@ -110,19 +113,51 @@ public class UsuarioService {
         usuario.setEmail(dados.getEmail());
         usuario.setRegiao(dados.getRegiao());
 
+        // Telefone é obrigatório: quando informado, é validado; se vier nulo, permanece o atual
+        if (dados.getTelefone() != null) {
+            usuario.setTelefone(normalizarTelefone(dados.getTelefone()));
+        }
+
         // Senha e perfil não são alterados por este endpoint
         return repository.save(usuario);
     }
 
-    // Atualizar nome, e-mail e região do usuário autenticado
-    public Usuario atualizarPerfil(String nome, String email, String regiao) {
+    // Atualizar nome, e-mail, região e telefone do usuário autenticado
+    public Usuario atualizarPerfil(String nome, String email, String regiao, String telefone) {
 
         Usuario dados = new Usuario();
         dados.setNome(nome);
         dados.setEmail(email);
         dados.setRegiao(regiao);
+        dados.setTelefone(telefone);
 
         return atualizar(Long.valueOf(obterJwt().getSubject()), dados);
+    }
+
+    // Mantém só os dígitos e valida DDD + número (10 dígitos fixo, 11 celular).
+    static String normalizarTelefone(String bruto) {
+
+        String digitos = bruto == null ? "" : bruto.replaceAll("\\D", "");
+
+        if (digitos.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "O telefone é obrigatório"
+            );
+        }
+
+        boolean valido = (digitos.length() == 10 || digitos.length() == 11)
+                && Integer.parseInt(digitos.substring(0, 2)) >= 11
+                && (digitos.length() == 10 || digitos.charAt(2) == '9');
+
+        if (!valido) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Telefone inválido. Informe o DDD e o número, por exemplo (85) 99999-9999"
+            );
+        }
+
+        return digitos;
     }
 
     // Excluir usuário - somente ADMIN

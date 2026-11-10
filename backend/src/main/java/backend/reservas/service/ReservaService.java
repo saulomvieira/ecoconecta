@@ -59,11 +59,22 @@ public class ReservaService {
             );
         }
 
+        // Libera os resíduos e as cotas de reservas vencidas antes de validar
+        expirarVencidas();
+
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Usuário não encontrado"
                 ));
+
+        // O dono do resíduo precisa de um contato para combinar a coleta
+        if (usuario.getTelefone() == null || usuario.getTelefone().isBlank()) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Cadastre seu telefone no perfil antes de reservar"
+            );
+        }
 
         Residuo residuo = residuoRepository.buscarPorIdComBloqueio(residuoId)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -114,13 +125,65 @@ public class ReservaService {
         // Verifica os limites do plano antes de reservar
         verificarLimitesColeta(usuarioId);
 
+        LocalDateTime agora = LocalDateTime.now();
+
         Reserva reserva = new Reserva();
         reserva.setUsuario(usuario);
         reserva.setResiduo(residuo);
         reserva.setStatus(StatusReserva.RESERVADA);
-        reserva.setDataReserva(LocalDateTime.now());
+        reserva.setDataReserva(agora);
+        reserva.setDataExpiracao(agora.plusDays(Reserva.DIAS_VALIDADE));
 
         return reservaRepository.save(reserva);
+    }
+
+    // Expira as reservas ativas com prazo vencido; o resíduo volta ao feed.
+    // Chamado periodicamente pelo ExpiracaoReservasJob e antes de operações
+    // que dependem do estado atual das reservas.
+    @Transactional
+    public int expirarVencidas() {
+
+        return reservaRepository.expirarVencidas(
+                StatusReserva.RESERVADA,
+                StatusReserva.EXPIRADA,
+                LocalDateTime.now()
+        );
+    }
+
+    // Estender o prazo da reserva por mais 7 dias — dono do resíduo ou ADMIN.
+    // Não há limite de extensões; só vale enquanto a reserva está ativa.
+    @Transactional
+    public ReservaRecebidaResponse estender(Long id) {
+
+        expirarVencidas();
+
+        Reserva reserva = reservaRepository.buscarPorIdComBloqueio(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Reserva não encontrada"
+                ));
+
+        Long donoResiduoId = reserva.getResiduo().getUsuario().getId();
+
+        if (!ehAdmin() && !donoResiduoId.equals(usuarioAutenticadoId())) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Somente o dono do resíduo ou um administrador pode estender a reserva"
+            );
+        }
+
+        if (reserva.getStatus() != StatusReserva.RESERVADA) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Só é possível estender uma reserva ativa"
+            );
+        }
+
+        reserva.setDataExpiracao(
+                reserva.getDataExpiracao().plusDays(Reserva.DIAS_VALIDADE)
+        );
+
+        return ReservaRecebidaResponse.de(reservaRepository.save(reserva));
     }
 
     // Listar todas as reservas - somente ADMIN
@@ -137,16 +200,22 @@ public class ReservaService {
     }
 
     // Listar reservas do usuário autenticado
+    @Transactional
     public List<Reserva> listarMinhasReservas() {
 
         Long usuarioId = usuarioAutenticadoId();
+
+        expirarVencidas();
 
         return reservaRepository
                 .findByUsuarioIdOrderByDataReservaDesc(usuarioId);
     }
 
     // Listar reservas ativas dos resíduos do usuário autenticado
+    @Transactional
     public List<ReservaRecebidaResponse> listarRecebidas() {
+
+        expirarVencidas();
 
         return reservaRepository
                 .findByResiduoUsuarioIdAndStatusOrderByDataReservaDesc(
@@ -173,6 +242,7 @@ public class ReservaService {
     }
 
     // Atualizar status da reserva
+    @Transactional
     public Reserva atualizar(Long id, StatusReserva novoStatus) {
 
         if (novoStatus == null) {
@@ -182,7 +252,9 @@ public class ReservaService {
             );
         }
 
-        Reserva reserva = reservaRepository.findById(id)
+        expirarVencidas();
+
+        Reserva reserva = reservaRepository.buscarPorIdComBloqueio(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Reserva não encontrada"
@@ -192,7 +264,7 @@ public class ReservaService {
         if (reserva.getStatus() != StatusReserva.RESERVADA) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
-                    "Não é possível alterar uma reserva cancelada ou coletada"
+                    "Não é possível alterar uma reserva cancelada, coletada ou expirada"
             );
         }
 
@@ -239,7 +311,10 @@ public class ReservaService {
 
 
     // Cancelar reserva
+    @Transactional
     public void excluir(Long id) {
+
+        expirarVencidas();
 
         Reserva reserva = buscarPorId(id);
 
@@ -247,6 +322,13 @@ public class ReservaService {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "Não é possível cancelar uma reserva já coletada"
+            );
+        }
+
+        if (reserva.getStatus() == StatusReserva.EXPIRADA) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Esta reserva já expirou"
             );
         }
 

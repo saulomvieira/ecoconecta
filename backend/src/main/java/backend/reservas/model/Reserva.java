@@ -14,10 +14,15 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Reserva {
 
+    // Prazo da reserva e de cada extensão feita pelo dono do resíduo
+    public static final int DIAS_VALIDADE = 7;
+
     public enum StatusReserva {
         RESERVADA,
         COLETADA,
-        CANCELADA
+        CANCELADA,
+        // Prazo vencido sem coleta: o resíduo volta a ficar disponível
+        EXPIRADA
     }
 
     @Id
@@ -38,4 +43,8 @@ public class Reserva {
 
     @Column(name = "data_reserva", nullable = false)
     private LocalDateTime dataReserva;
+
+    // Fim do prazo da reserva (7 dias após a reserva, ampliável pelo dono do resíduo)
+    @Column(name = "data_expiracao")
+    private LocalDateTime dataExpiracao;
 }

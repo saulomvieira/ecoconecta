@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
-import { MapPin, User } from 'lucide-react'
+import { MapPin, Phone, User } from 'lucide-react'
 import { authApi, SENHA_MIN } from '../api/auth'
 import { REGIOES } from '../api/regioes'
 import { ApiError } from '../api/client'
@@ -9,6 +9,7 @@ import { useAuth } from '../auth/AuthContext'
 import { AuthCard } from '../components/AuthCard'
 import { CampoEmail, CampoSenha, CampoTexto } from '../components/AuthFields'
 import { Modal } from '../components/Modal'
+import { MENSAGEM_TELEFONE, formatarTelefone, somenteDigitos, telefoneValido } from '../utils/telefone'
 
 export function Cadastro() {
   const { sessao, entrar } = useAuth()
@@ -18,6 +19,7 @@ export function Cadastro() {
   const [senha, setSenha] = useState('')
   const [confirmacao, setConfirmacao] = useState('')
   const [regiao, setRegiao] = useState('')
+  const [telefone, setTelefone] = useState('')
   const [aceitou, setAceitou] = useState(false)
   const [termo, setTermo] = useState<TermoUso | null>(null)
   const [lendoTermo, setLendoTermo] = useState(false)
@@ -43,9 +45,13 @@ export function Cadastro() {
       setErro('As senhas não conferem.')
       return
     }
+    if (!telefoneValido(telefone)) {
+      setErro(MENSAGEM_TELEFONE)
+      return
+    }
     setEnviando(true)
     try {
-      await authApi.cadastrar({ nome: nome.trim(), email: email.trim(), senha, regiao, aceitouTermos: aceitou })
+      await authApi.cadastrar({ nome: nome.trim(), email: email.trim(), senha, regiao, telefone: somenteDigitos(telefone), aceitouTermos: aceitou })
     } catch (err) {
       setErro(err instanceof ApiError ? err.message : 'Falha ao criar a conta.')
       setEnviando(false)
@@ -64,6 +70,12 @@ export function Cadastro() {
         <CampoTexto rotulo="Nome completo" icone={User} obrigatorio placeholder="Seu nome completo" autoComplete="name"
           value={nome} onChange={(e) => setNome(e.target.value)} />
         <CampoEmail rotulo="E-mail" obrigatorio value={email} onChange={(e) => setEmail(e.target.value)} />
+        <div>
+          <CampoTexto rotulo="Telefone" icone={Phone} obrigatorio type="tel" inputMode="tel" autoComplete="tel-national"
+            placeholder="(85) 99999-9999" maxLength={15} value={telefone}
+            onChange={(e) => setTelefone(formatarTelefone(e.target.value))} />
+          <small className="muted">Usado pelo dono do resíduo para combinar a coleta quando você reservar.</small>
+        </div>
         <CampoSenha rotulo="Senha" obrigatorio autoComplete="new-password" placeholder={`Mín. ${SENHA_MIN} caracteres`}
           minLength={SENHA_MIN} value={senha} onChange={(e) => setSenha(e.target.value)} />
         <div>

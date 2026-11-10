@@ -35,6 +35,13 @@ public class Usuario {
 
     private String regiao;
 
+    // Telefone de contato (só dígitos, DDD + número). Nunca é serializado junto
+    // com a entidade, porque o feed de resíduos é público; é exposto apenas por
+    // DTOs específicos (perfil do próprio usuário e reservas recebidas).
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Column(length = 11)
+    private String telefone;
+
     @Transient
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Boolean aceitouTermos;

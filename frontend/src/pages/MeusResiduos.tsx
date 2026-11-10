@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react'
 import { Navigate, useSearchParams } from 'react-router-dom'
 import { Lock, Pencil, Plus, Trash2 } from 'lucide-react'
 import { mensagemErro } from '../api/admin'
-import { confirmarColeta, listarMinhasReservas, listarReservasRecebidas, type ReservaRecebida } from '../api/reservas'
+import { confirmarColeta, estenderReserva, listarMinhasReservas, listarReservasRecebidas, type ReservaRecebida } from '../api/reservas'
 import { excluirResiduo, listarFeed, type ResiduoDisponibilidade } from '../api/residuos'
 import { useAuth } from '../auth/AuthContext'
 import { IconeCategoria } from '../components/IconeCategoria'
 import { Modal } from '../components/Modal'
 import { STATUS_RESIDUO } from '../utils/residuo'
+import { formatarTelefone } from '../utils/telefone'
 import { CadastrarResiduo } from './CadastrarResiduo'
 import { MinhasReservas } from './MinhasReservas'
 import './MeusResiduos.css'
@@ -35,6 +36,8 @@ export function MeusResiduos() {
   const [confirmando, setConfirmando] = useState<ReservaRecebida | null>(null)
   const [erroConfirmar, setErroConfirmar] = useState('')
   const [coletando, setColetando] = useState(false)
+  const [estendendo, setEstendendo] = useState<number | null>(null)
+  const [erroEstender, setErroEstender] = useState('')
 
   const [versao, setVersao] = useState(0)
   const recarregar = () => setVersao((v) => v + 1)
@@ -84,6 +87,20 @@ export function MeusResiduos() {
     }
   }
 
+  async function estender(reserva: ReservaRecebida) {
+    setEstendendo(reserva.id)
+    setErroEstender('')
+    try {
+      const atualizada = await estenderReserva(reserva.id)
+      setRecebidas((atual) => ({ ...atual, [atualizada.residuoId]: atualizada }))
+    } catch (e) {
+      setErroEstender(mensagemErro(e, 'Não foi possível estender a reserva.'))
+      recarregar()
+    } finally {
+      setEstendendo(null)
+    }
+  }
+
   function aoSalvar() {
     setFormulario(null)
     recarregar()
@@ -110,6 +127,7 @@ export function MeusResiduos() {
       ) : (
         <>
       {erro && <p className="error" role="alert">{erro}</p>}
+      {erroEstender && <p className="error" role="alert">{erroEstender}</p>}
       {carregando && !erro && <p className="muted">Carregando…</p>}
       {!carregando && !erro && itens.length === 0 && (
         <p className="meus-residuos-vazio">Você ainda não publicou nenhum resíduo. Clique em “Novo resíduo” para começar.</p>
@@ -127,12 +145,27 @@ export function MeusResiduos() {
                 <div className="mr-texto">
                   <strong>{residuo.nome} - {residuo.quantidade} {residuo.unidadeMedida}</strong>
                   <span>{residuo.enderecoColeta}</span>
+                  {reserva && (
+                    <span className="mr-contato">
+                      Reservado por {reserva.reservadoPor} ·{' '}
+                      {reserva.telefone
+                        ? <a href={`tel:+55${reserva.telefone}`}>{formatarTelefone(reserva.telefone)}</a>
+                        : 'telefone não informado'}
+                      {' '}· até <b>{dataCurta(reserva.dataExpiracao)}</b>
+                    </span>
+                  )}
                 </div>
               </div>
               <span className="mr-coluna mr-regiao">{residuo.regiao}</span>
               <span className="mr-coluna"><span className={`mr-status ${info.classe}`}>{info.rotulo}</span></span>
               <span className="mr-coluna mr-data">{dataCurta(residuo.dataCadastro)}</span>
               <div className="mr-acoes">
+                {reserva && (
+                  <button type="button" className="mr-estender" disabled={estendendo === reserva.id}
+                    title="Dar mais 7 dias para a pessoa coletar" onClick={() => estender(reserva)}>
+                    {estendendo === reserva.id ? 'Estendendo…' : '+7 dias'}
+                  </button>
+                )}
                 {reserva && (
                   <button type="button" className="mr-confirmar" onClick={() => { setErroConfirmar(''); setConfirmando(reserva) }}>Confirmar coleta</button>
                 )}

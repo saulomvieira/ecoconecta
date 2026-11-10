@@ -37,6 +37,15 @@ services:
       sh -c "mvn clean install -DskipTests &&
              mvn spring-boot:run"
 
+    # Saudável só quando o Tomcat já aceita conexões na 8080. O start_period cobre
+    # o `mvn clean install` (na primeira vez baixa as dependências).
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 8080"]
+      interval: 5s
+      timeout: 3s
+      start_period: 60s
+      retries: 90
+
   db:
     image: postgres:17-alpine
 
@@ -66,6 +75,10 @@ services:
       context: ./frontend
 
     container_name: react-ecoconecta
+
+    depends_on:
+      app:
+        condition: service_healthy
 
     environment:
       VITE_PROXY_TARGET: http://app:8080

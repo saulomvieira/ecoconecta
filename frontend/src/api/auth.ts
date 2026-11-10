@@ -5,6 +5,7 @@ export interface NovoUsuario {
   email: string
   senha: string
   regiao: string
+  telefone: string
   aceitouTermos: boolean
 }
 

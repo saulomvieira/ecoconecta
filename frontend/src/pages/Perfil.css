@@ -21,3 +21,4 @@
 .perfil-sair { display: inline-flex; align-items: center; justify-content: center; gap: 8px; color: #b3261e; border-color: #f3c7c4; }
 .perfil-sair svg { width: 16px; height: 16px; }
 @media (max-width: 800px) { .perfil-grade { grid-template-columns: 1fr; } }
+.perfil-dica { font-weight: 400; color: #73808c; font-size: 12px; }

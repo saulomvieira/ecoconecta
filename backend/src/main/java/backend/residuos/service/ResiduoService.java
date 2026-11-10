@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 import backend.reservas.model.Reserva;
+import backend.reservas.service.ReservaService;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ import java.util.List;
 public class ResiduoService {
 
     private final ReservaRepository reservaRepository;
+    private final ReservaService reservaService;
     private final ResiduoRepository repository;
     private final UsuarioRepository usuarioRepository;
 
@@ -34,11 +36,13 @@ public class ResiduoService {
     public ResiduoService(
             ResiduoRepository repository,
             UsuarioRepository usuarioRepository,
-            ReservaRepository reservaRepository) {
+            ReservaRepository reservaRepository,
+            ReservaService reservaService) {
 
         this.repository = repository;
         this.usuarioRepository = usuarioRepository;
         this.reservaRepository = reservaRepository;
+        this.reservaService = reservaService;
     }
 
      // Cadastrar resíduo
@@ -82,6 +86,9 @@ public class ResiduoService {
         Residuo residuo = buscarPorId(id);
         // Somente o proprietário ou ADMIN pode atualizar
         exigirProprietarioOuAdmin(residuo.getUsuario().getId());
+
+        // Reservas com prazo vencido não bloqueiam mais a edição
+        reservaService.expirarVencidas();
 
         // Impede alterar resíduos reservados ou coletados
         boolean indisponivel = reservaRepository.existsByResiduoIdAndStatusIn(
@@ -159,6 +166,9 @@ public class ResiduoService {
             String regiao,
             boolean priorizarRegiao) {
 
+        // Resíduos com reserva vencida voltam a aparecer como disponíveis
+        reservaService.expirarVencidas();
+
         List<Residuo> residuos;
 
         if (regiao != null && !regiao.isBlank()) {
@@ -235,6 +245,8 @@ public class ResiduoService {
 
     // Listar feed de resíduos com disponibilidade
     public List<ResiduoDisponibilidadeResponse> listarFeed(String regiao) {
+
+        reservaService.expirarVencidas();
 
         List<Residuo> residuos;
 
@@ -321,6 +333,8 @@ public class ResiduoService {
 
     // Consultar a disponibilidade de um resíduo
     public ResiduoDisponibilidadeResponse consultarDisponibilidade(Long id) {
+
+        reservaService.expirarVencidas();
 
         Residuo residuo = buscarPorId(id);
 
