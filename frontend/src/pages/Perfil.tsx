@@ -5,6 +5,7 @@ import { mensagemErro } from '../api/admin'
 import { iniciais, perfilApi, type MeuPerfil } from '../api/perfil'
 import { REGIOES } from '../api/regioes'
 import { useAuth } from '../auth/AuthContext'
+import { MENSAGEM_TELEFONE, formatarTelefone, somenteDigitos, telefoneValido } from '../utils/telefone'
 import './Perfil.css'
 
 const SENHA_MIN = 8
@@ -32,6 +33,7 @@ export function Perfil() {
   const [nome, setNome] = useState('')
   const [email, setEmail] = useState('')
   const [regiao, setRegiao] = useState('')
+  const [telefone, setTelefone] = useState('')
   const [salvando, setSalvando] = useState(false)
   const [msgDados, setMsgDados] = useState<{ ok: boolean; texto: string } | null>(null)
 
@@ -46,6 +48,7 @@ export function Perfil() {
     setNome(p.nome)
     setEmail(p.email)
     setRegiao(p.regiao ?? '')
+    setTelefone(formatarTelefone(p.telefone ?? ''))
   }
 
   useEffect(() => {
@@ -61,10 +64,14 @@ export function Perfil() {
 
   async function salvarDados(e: FormEvent) {
     e.preventDefault()
-    setSalvando(true)
     setMsgDados(null)
+    if (!telefoneValido(telefone)) {
+      setMsgDados({ ok: false, texto: MENSAGEM_TELEFONE })
+      return
+    }
+    setSalvando(true)
     try {
-      preencher(await perfilApi.atualizar({ nome: nome.trim(), email: email.trim(), regiao }))
+      preencher(await perfilApi.atualizar({ nome: nome.trim(), email: email.trim(), regiao, telefone: somenteDigitos(telefone) }))
       setMsgDados({ ok: true, texto: 'Dados atualizados com sucesso.' })
     } catch (err) {
       setMsgDados({ ok: false, texto: mensagemErro(err, 'Não foi possível salvar os dados.') })
@@ -111,6 +118,11 @@ export function Perfil() {
               </label>
               <label>E-mail
                 <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
+              </label>
+              <label>Telefone
+                <input required type="tel" inputMode="tel" autoComplete="tel-national" placeholder="(85) 99999-9999"
+                  maxLength={15} value={telefone} onChange={(e) => setTelefone(formatarTelefone(e.target.value))} />
+                <small className="perfil-dica">Mostrado ao dono do resíduo quando você faz uma reserva, para combinar a coleta.</small>
               </label>
               <label>Região
                 <select value={regiao} onChange={(e) => setRegiao(e.target.value)}>

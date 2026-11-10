@@ -61,3 +61,10 @@
 .meus-residuos-vazio a { color: #244e3f; font-weight: 600; }
 .mr-confirmar { font: inherit; font-weight: 600; padding: 4px 12px; background: #244e3f; color: #fff; border: 0; border-radius: 999px; cursor: pointer; white-space: nowrap; }
 .mr-confirmar:hover { background: #1b3b30; }
+.mr-texto .mr-prazo { color: #a76a26; font-weight: 600; }
+.mr-texto .mr-contato { white-space: normal; line-height: 18px; }
+.mr-contato a { color: #244e3f; font-weight: 600; text-decoration: none; }
+.mr-contato a:hover { text-decoration: underline; }
+.mr-estender { font: inherit; font-weight: 600; padding: 4px 12px; background: #fff; color: #244e3f; border: 1px solid #244e3f; border-radius: 999px; cursor: pointer; white-space: nowrap; }
+.mr-estender:hover:not(:disabled) { background: #e8eee9; }
+.mr-estender:disabled { opacity: 0.6; cursor: default; }

@@ -12,12 +12,14 @@ const FILTROS: { valor: Filtro; titulo: string }[] = [
   { valor: 'RESERVADA', titulo: 'Ativas' },
   { valor: 'COLETADA', titulo: 'Concluídas' },
   { valor: 'CANCELADA', titulo: 'Canceladas' },
+  { valor: 'EXPIRADA', titulo: 'Expiradas' },
 ]
 
 const STATUS: Record<StatusReserva, { rotulo: string; classe: string }> = {
   RESERVADA: { rotulo: 'Ativa', classe: 'disponivel' },
   COLETADA: { rotulo: 'Concluída', classe: 'coletado' },
   CANCELADA: { rotulo: 'Cancelada', classe: 'cancelado' },
+  EXPIRADA: { rotulo: 'Expirada', classe: 'cancelado' },
 }
 
 const VAZIO: Record<Filtro, string> = {
@@ -25,6 +27,7 @@ const VAZIO: Record<Filtro, string> = {
   RESERVADA: 'Você não possui reservas ativas.',
   COLETADA: 'Você ainda não possui reservas concluídas.',
   CANCELADA: 'Você não possui reservas canceladas.',
+  EXPIRADA: 'Você não possui reservas expiradas.',
 }
 
 function dataCurta(iso: string): string {
@@ -103,6 +106,12 @@ export function MinhasReservas({ onContagem }: { onContagem?: (n: number) => voi
                   <div className="mr-texto">
                     <strong>{residuo.nome} - {residuo.quantidade} {residuo.unidadeMedida}</strong>
                     <span>{residuo.enderecoColeta}</span>
+                    {reserva.status === 'RESERVADA' && reserva.dataExpiracao && (
+                      <span className="mr-prazo">Reserva válida até {dataCurta(reserva.dataExpiracao)}</span>
+                    )}
+                    {reserva.status === 'EXPIRADA' && (
+                      <span>Prazo encerrado: o resíduo voltou para o feed.</span>
+                    )}
                   </div>
                 </div>
                 <span className="mr-coluna mr-regiao">{residuo.regiao}</span>
